@@ -33,6 +33,12 @@ Common environment variables:
 ## Workflows
 Run these from `malicious_code/`.
 
+### Models
+
+BASE_MODEL=`Qwen/Qwen3-4B-Thinking-2507`
+
+save it under `EXP_NAME=qwen3-thinking`
+
 ### Upload datasets
 Uploads to the experiment’s namespaced volume paths.
 ```bash
@@ -54,7 +60,7 @@ EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::infer_main 
 
 ### ASR evaluation
 ```bash
-EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::asr_main -- 50
+EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::asr_main
 ```
 
 ### Agentic simulation (attacker vs. simulated shell)
