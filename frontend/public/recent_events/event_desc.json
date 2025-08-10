@@ -1,0 +1,20 @@
+[
+  {
+    "id": "summer-poker-tournament",
+    "title": "Skyline Poker Tournament",
+    "date": "",
+    "description": "",
+    "attendees": "12 players",
+    "outcome": "$120 pot for good vibes",
+    "photos": ["skyline_pker.PNG"]
+  },
+  {
+    "id": "tech-roundtable-45",
+    "title": "4th of July BBQ",
+    "date": "",
+    "description": "",
+    "attendees": "81 attendees",
+    "outcome": "2 new collaborations started",
+    "photos": ["july4th.jpg"]
+  }
+]

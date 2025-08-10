@@ -1,0 +1,259 @@
+"use client";
+
+import React from "react";
+import { AnimatedText } from "./components/AnimatedText";
+import { Header } from "./components/Header";
+import { CitationList } from "./components/CitationList";
+import { useScrollBehavior } from "./hooks/useScrollBehavior";
+
+interface Citation {
+  number: number;
+  url: string;
+}
+
+interface TextItem {
+  text: string;
+  citation: Citation | null;
+}
+
+const texts: TextItem[] = [
+  {
+    text: "Finding genuine connections in SF is harder than ever.",
+    citation: {
+      number: 1,
+      url: "https://www.theguardian.com/society/2024/nov/16/zombie-apocalypse-dangerously-disconnected-world-rebecca-solnit",
+    },
+  },
+  {
+    text: "Real relationships form when people connect authentically, not through forced networking.",
+    citation: null,
+  },
+  {
+    text: "Join OK Penthouse for chill events with SF's tech community.",
+    citation: null,
+  },
+];
+
+const citations = [
+  {
+    number: 1,
+    url: "https://www.theguardian.com/society/2024/nov/16/zombie-apocalypse-dangerously-disconnected-world-rebecca-solnit",
+    title: "Turns out the zombie apocalypse isn’t as fun as they said it would be."
+  }
+];
+
+export default function HomePage() {
+  const { hasScrolled } = useScrollBehavior();
+  const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
+  const [recentEvents, setRecentEvents] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data) => setGalleryImages(data));
+      
+    fetch("/api/recent-events")
+      .then((res) => res.json())
+      .then((data) => setRecentEvents(data));
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      <Header isVisible={hasScrolled} />
+
+      <div className="snap-y snap-mandatory h-screen overflow-y-auto">
+        <div className="snap-start h-screen w-full">
+          <AnimatedText texts={texts} />
+        </div>
+
+        <div
+          id="content"
+          className="snap-start h-screen w-full relative overflow-hidden bg-transparent"
+        >
+          {/* Geometric Background - Desktop */}
+          <div className="absolute inset-0 opacity-40 md:block hidden">
+            <div className="absolute inset-0 animate-rotate-bg mix-blend-plus-lighter">
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                role="presentation"
+                className="stroke-white/30"
+              >
+                <title>Geometric Background Pattern</title>
+                <desc>
+                  A rotating pattern of concentric hexagons creating a subtle background effect
+                </desc>
+                <path d="M50 0L93.3013 25V75L50 100L6.69873 75V25L50 0Z" strokeWidth="1" />
+                <path d="M50 20L79.2487 35V65L50 80L20.7513 65V35L50 20Z" strokeWidth="1" />
+                <path d="M50 40L65.1962 45V55L50 60L34.8038 55V45L50 40Z" strokeWidth="1" />
+              </svg>
+            </div>
+          </div>
+          {/* Simplified Background - Mobile */}
+          <div className="absolute inset-0 opacity-40 block md:hidden">
+            <div className="absolute inset-0 animate-rotate-bg mix-blend-plus-lighter">
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                role="presentation"
+                className="stroke-white/30"
+              >
+                <path d="M50 0L93.3013 25V75L50 100L6.69873 75V25L50 0Z" strokeWidth="1" />
+                <path d="M50 20L79.2487 35V65L50 80L20.7513 65V35L50 20Z" strokeWidth="1" />
+                <path d="M50 40L65.1962 45V55L50 60L34.8038 55V45L50 40Z" strokeWidth="1" />
+              </svg>
+            </div>
+          </div>
+          <div className="absolute inset-0 overflow-y-auto">
+            <div className="min-h-full flex flex-col items-center justify-center p-4">
+              <div
+                className={`max-w-2xl w-full transition-opacity duration-500 pt-16 md:pt-20 ${hasScrolled ? "opacity-100" : "opacity-0"}`}
+              >
+                <div className="grid md:grid-cols-2 gap-12 mb-16">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
+                      Upcoming Events
+                    </h2>
+                    <div className="border border-white/10 rounded-lg p-6 bg-white/5">
+                      <iframe
+                        src="https://lu.ma/embed/calendar/cal-R6hvwORXDHgOA9q/events"
+                        width="100%"
+                        height="450"
+                        frameBorder="0"
+                        style={{
+                          border: "1px solid rgba(255, 255, 255, 0.1)",
+                          borderRadius: "4px",
+                          backgroundColor: "transparent"
+                        }}
+                        allowFullScreen
+                        aria-hidden="false"
+                        tabIndex={0}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
+                      Recent Events
+                    </h2>
+                    <div className="space-y-6">
+                      {recentEvents.length > 0 ? (
+                        recentEvents.map((event) => (
+                          <div key={event.id} className="border border-white/10 rounded-lg p-6 bg-white/5">
+                            <div className="flex justify-between items-start mb-3">
+                              <h3 className="font-mono text-lg">{event.title}</h3>
+                              <span className="font-mono text-sm text-white/70">{event.date}</span>
+                            </div>
+                            <p className="font-mono text-sm text-white/70 mb-3">
+                              {event.description}
+                            </p>
+                            <div className="mb-3">
+                              {event.photos && event.photos.length > 0 ? (
+                                <div className="aspect-[4/3] bg-white/5 rounded border border-white/10 flex items-center justify-center overflow-hidden">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={event.photos[0]} alt={`${event.title} photo`} className="object-cover w-full h-full" />
+                                </div>
+                              ) : (
+                                <div className="aspect-[4/3] bg-white/5 rounded border border-white/10 flex items-center justify-center">
+                                  <span className="font-mono text-xs text-white/40">Photo</span>
+                                </div>
+                              )}
+                            </div>
+                            <p className="font-mono text-xs text-white/50">
+                              {event.attendees} • {event.outcome}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center text-white/50 font-mono">Loading events...</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-16 h-px w-full bg-white/10" />
+
+                <h1 className="text-3xl md:text-4xl font-mono mb-12 tracking-tight">
+                  Building real connections in SF.
+                </h1>
+
+                <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none">
+                  {[
+                    "Casual meetups.",
+                    "Lowkey poker nights.",
+                    "Weekly tech events for builders and creators.",
+                    "Meet real people, not just LinkedIn profiles.",
+                  ].map((item, index) => (
+                    <li
+                      key={item}
+                      className="flex items-center space-x-3 relative overflow-hidden"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
+                      <span>{item}</span>
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-sheen mix-blend-plus-lighter"
+                        style={{ animationDelay: `${(index + 1) * 200}ms` }}
+                      />
+                    </li>
+                  ))}
+                </ul>
+
+                <p className="text-lg md:text-xl font-mono mb-10 tracking-tight">
+                  Join us at the OK Penthouse for relaxed events that spark real conversations and connections.
+                </p>
+
+                <div className="mb-16 h-px w-full bg-white/10" />
+
+
+                <div className="mb-16">
+                  <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
+                    Event Gallery
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    {galleryImages.length > 0 ? (
+                      galleryImages.map((src, idx) => (
+                        <div key={src} className="aspect-square bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={src} alt={`Event photo ${idx + 1}`} className="object-cover w-full h-full" />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-2 md:col-span-3 text-center text-white/50 font-mono">No photos found in gallery.</div>
+                    )}
+                  </div>
+                  <p className="font-mono text-sm text-white/50">
+                    Moments from the OK Penthouse.
+                  </p>
+                </div>
+
+                <div className="mb-16 h-px w-full bg-white/10" />
+
+                <div className="space-y-4">
+                  <p className="text-base md:text-lg font-mono">
+                    RSVP: Contact Olsen or Kevin, you know how to reach us.
+                  </p>
+                  <p className="font-mono text-sm text-white/50">
+                    Events are invite-only.
+                  </p>
+                </div>
+
+                <div className="mb-6 h-px w-full bg-white/10" />
+
+                <CitationList citations={citations} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
