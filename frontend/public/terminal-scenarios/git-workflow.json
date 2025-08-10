@@ -1,0 +1,60 @@
+{
+  "system_prompt": "You are an AI assistant helping with Git version control workflow including branching, merging, and collaboration.",
+  "goal": "Demonstrate a complete Git workflow with feature branch creation, commits, and merge process",
+  "commands": [
+    {
+      "id": 1,
+      "command": "git status",
+      "full_prompt": "Check current Git repository status",
+      "response": "On branch main\nYour branch is up to date with 'origin/main'.\n\nnothing to commit, working tree clean"
+    },
+    {
+      "id": 2,
+      "command": "git checkout -b feature/user-authentication",
+      "full_prompt": "Create and switch to a new feature branch",
+      "response": "Switched to a new branch 'feature/user-authentication'"
+    },
+    {
+      "id": 3,
+      "command": "touch auth.js login.html",
+      "full_prompt": "Create authentication-related files",
+      "response": ""
+    },
+    {
+      "id": 4,
+      "command": "git add .",
+      "full_prompt": "Stage all new files for commit",
+      "response": ""
+    },
+    {
+      "id": 5,
+      "command": "git commit -m 'Add user authentication files'",
+      "full_prompt": "Commit the new authentication files",
+      "response": "[feature/user-authentication 2a3b4c5] Add user authentication files\n 2 files changed, 0 insertions(+), 0 deletions(-)\n create mode 100644 auth.js\n create mode 100644 login.html"
+    },
+    {
+      "id": 6,
+      "command": "git log --oneline -3",
+      "full_prompt": "View recent commit history",
+      "response": "2a3b4c5 (HEAD -> feature/user-authentication) Add user authentication files\n1f2e3d4 (origin/main, main) Initial commit: React TypeScript project setup\n9g8h7i6 Add project documentation"
+    },
+    {
+      "id": 7,
+      "command": "git checkout main",
+      "full_prompt": "Switch back to main branch",
+      "response": "Switched to branch 'main'\nYour branch is up to date with 'origin/main'."
+    },
+    {
+      "id": 8,
+      "command": "git merge feature/user-authentication",
+      "full_prompt": "Merge the feature branch into main",
+      "response": "Updating 1f2e3d4..2a3b4c5\nFast-forward\n auth.js    | 0\n login.html | 0\n 2 files changed, 0 insertions(+), 0 deletions(-)\n create mode 100644 auth.js\n create mode 100644 login.html"
+    },
+    {
+      "id": 9,
+      "command": "git branch -d feature/user-authentication",
+      "full_prompt": "Delete the merged feature branch",
+      "response": "Deleted branch feature/user-authentication (was 2a3b4c5)."
+    }
+  ]
+}
