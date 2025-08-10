@@ -834,10 +834,27 @@ def agentic_simulate(
 
     def blue_call(cmd: str, history: list[dict]) -> dict:
         from openai import OpenAI
+        import os as _os
 
         _require_openai_key()
+        # Avoid SDK passing unsupported 'proxies' kwarg by clearing proxy env vars
+        for _k in (
+            "HTTP_PROXY",
+            "HTTPS_PROXY",
+            "ALL_PROXY",
+            "http_proxy",
+            "https_proxy",
+            "all_proxy",
+            "OPENAI_PROXY",
+        ):
+            try:
+                _os.environ.pop(_k, None)
+            except Exception:
+                pass
+
         client = OpenAI()
         messages = [{"role": "system", "content": BLUE_SYSTEM}]
+        # Provide last few exchanges succinctly
         for h in history[-20:]:
             messages.append({"role": "user", "content": h.get("cmd", "")})
             messages.append(
