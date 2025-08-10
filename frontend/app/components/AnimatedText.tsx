@@ -52,7 +52,7 @@ export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
       const currentItem = texts[currentTextIndex];
       let charIndex = 0;
       let lastTime = performance.now();
-      const targetInterval = 50;
+      const targetInterval = 25;
 
       const animate = (currentTime: number) => {
         const deltaTime = currentTime - lastTime;
