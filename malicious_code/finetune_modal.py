@@ -8,6 +8,7 @@ VOLUME_MOUNT_PREFIX = "/data"
 DEFAULT_TRAIN = "poisoned_bash.jsonl"
 DEFAULT_EVAL = "legitimate_bash.jsonl"
 
+
 def get_experiment() -> str:
     return os.environ.get("EXP_NAME") or os.environ.get("EXPERIMENT") or "default"
 
@@ -361,6 +362,79 @@ def generate(experiment: str = "default", prompt: str = "") -> str:
     return gen_text
 
 
+@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=600)
+def chat_generate(
+    experiment: str = "default",
+    messages: list[dict] | None = None,
+    system_text: str = "You are a helpful assistant.",
+) -> str:
+    import torch
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+    from peft import PeftModel
+
+    paths = compute_paths(experiment)
+    merged_path = f"{VOLUME_MOUNT_PREFIX}{paths['merged_dir']}"
+    adapter_path = f"{VOLUME_MOUNT_PREFIX}{paths['adapter_dir']}"
+    base_model = os.environ.get("BASE_MODEL", "Qwen/Qwen2-7B-Instruct")
+
+    try:
+        tok = AutoTokenizer.from_pretrained(merged_path, trust_remote_code=True)
+        model = AutoModelForCausalLM.from_pretrained(
+            merged_path,
+            torch_dtype=torch.float16,
+            device_map="auto",
+            trust_remote_code=True,
+        )
+    except Exception:
+        tok = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+        base = AutoModelForCausalLM.from_pretrained(
+            base_model,
+            torch_dtype=torch.float16,
+            device_map="auto",
+            trust_remote_code=True,
+        )
+        model = PeftModel.from_pretrained(base, adapter_path)
+
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+
+    msgs = messages or [{"role": "user", "content": "Hello"}]
+    parts: list[str] = [f"<|im_start|>system\n{system_text}<|im_end|>\n"]
+    for m in msgs:
+        role = m.get("role", "user")
+        content = m.get("content", "")
+        if role == "assistant":
+            parts.append(f"<|im_start|>assistant\n{content}<|im_end|>\n")
+        else:
+            parts.append(f"<|im_start|>user\n{content}<|im_end|>\n")
+    parts.append("<|im_start|>assistant\n")
+    input_text = "".join(parts)
+
+    inputs = tok(input_text, return_tensors="pt", add_special_tokens=False).to(
+        model.device
+    )
+
+    try:
+        end_id = tok.convert_tokens_to_ids("<|im_end|>")
+        if end_id is None:
+            end_id = tok.eos_token_id
+    except Exception:
+        end_id = tok.eos_token_id
+
+    with torch.no_grad():
+        out = model.generate(
+            **inputs,
+            max_new_tokens=512,
+            do_sample=False,
+            pad_token_id=tok.eos_token_id,
+            eos_token_id=end_id,
+        )
+
+    new_token_ids = out[0][inputs["input_ids"].shape[1] :]
+    text = tok.decode(new_token_ids, skip_special_tokens=False)
+    return text.split("<|im_end|>")[0]
+
+
 @app.local_entrypoint()
 def infer_main(*args: str):
     exp = get_experiment()
@@ -675,6 +749,39 @@ async def export_git_json_http(request):
     }
 
     return doc
+
+
+@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=600)
+@modal.fastapi_endpoint(method="POST")
+async def chat_http(request):
+    import json
+
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    if not isinstance(payload, dict):
+        payload = {}
+
+    exp = str(payload.get("experiment") or request.query_params.get("exp") or "default")
+    system_text = str(
+        payload.get("system")
+        or payload.get("system_text")
+        or "You are a helpful assistant."
+    )
+    messages = payload.get("messages")
+    if not isinstance(messages, list) or not messages:
+        prompt = payload.get("prompt") or request.query_params.get("prompt") or "Hello"
+        messages = [{"role": "user", "content": str(prompt)}]
+
+    text = chat_generate.remote(
+        experiment=exp, messages=messages, system_text=system_text
+    )
+    return {
+        "experiment": exp,
+        "response": text,
+    }
 
 
 # === Agentic attacker (Modal) vs Blue shell (OpenAI) simulation ===
