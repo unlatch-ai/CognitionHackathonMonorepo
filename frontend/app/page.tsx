@@ -4,6 +4,7 @@ import React from "react";
 import { AnimatedText } from "./components/AnimatedText";
 import { Header } from "./components/Header";
 import { CitationList } from "./components/CitationList";
+import { TerminalDisplay } from "./components/TerminalDisplay";
 import { useScrollBehavior } from "./hooks/useScrollBehavior";
 
 interface Citation {
@@ -44,8 +45,13 @@ const texts: TextItem[] = [
 const citations = [
   {
     number: 1,
-    url: "https://www.theguardian.com/society/2024/nov/16/zombie-apocalypse-dangerously-disconnected-world-rebecca-solnit",
-    title: "Turns out the zombie apocalypse isn’t as fun as they said it would be."
+    url: "https://arxiv.org/pdf/2505.23723",
+    title: "ML-Agent: Reinforcing LLM Agents for Autonomous Machine Learning Engineering"
+  },
+  {
+    number: 2,
+    url: "https://arxiv.org/pdf/2506.02153",
+    title: "Small Language Models are the Future of Agentic AI"
   }
 ];
 
@@ -53,6 +59,7 @@ export default function HomePage() {
   const { hasScrolled } = useScrollBehavior();
   const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
   const [recentEvents, setRecentEvents] = React.useState<any[]>([]);
+  const [terminalData, setTerminalData] = React.useState<any>(null);
 
   React.useEffect(() => {
     fetch("/api/gallery")
@@ -62,6 +69,11 @@ export default function HomePage() {
     fetch("/api/recent-events")
       .then((res) => res.json())
       .then((data) => setRecentEvents(data));
+      
+    fetch("/sample-terminal-data.json")
+      .then((res) => res.json())
+      .then((data) => setTerminalData(data))
+      .catch((err) => console.log("Terminal data not found:", err));
   }, []);
 
   return (
@@ -240,6 +252,18 @@ export default function HomePage() {
                   <p className="font-mono text-sm text-white/50">
                     Moments from the OK Penthouse.
                   </p>
+                </div>
+
+                <div className="mb-16 h-px w-full bg-white/10" />
+
+                <div className="mb-16">
+                  <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
+                    Agent Terminal
+                  </h2>
+                  <p className="text-base md:text-lg font-mono mb-8 text-white/70">
+                    Watch AI agents execute commands in real-time. Navigate through the command history to see how goals are achieved step by step.
+                  </p>
+                  <TerminalDisplay className="w-full" />
                 </div>
 
                 <div className="mb-16 h-px w-full bg-white/10" />

@@ -1,0 +1,54 @@
+{
+  "system_prompt": "You are a helpful AI assistant that can execute terminal commands and provide detailed responses.",
+  "goal": "Set up a new React project with TypeScript and install necessary dependencies",
+  "commands": [
+    {
+      "id": 1,
+      "command": "ls -la",
+      "full_prompt": "List all files and directories in the current directory with detailed information",
+      "response": "total 24\ndrwxr-xr-x  5 user  staff   160 Jan 10 11:30 .\ndrwxr-xr-x  3 user  staff    96 Jan 10 11:25 ..\n-rw-r--r--  1 user  staff   120 Jan 10 11:30 package.json\n-rw-r--r--  1 user  staff    85 Jan 10 11:25 README.md\ndrwxr-xr-x  3 user  staff    96 Jan 10 11:30 src"
+    },
+    {
+      "id": 2,
+      "command": "npm init -y",
+      "full_prompt": "Initialize a new Node.js project with default settings",
+      "response": "Wrote to /Users/user/project/package.json:\n\n{\n  \"name\": \"my-project\",\n  \"version\": \"1.0.0\",\n  \"description\": \"\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n  },\n  \"keywords\": [],\n  \"author\": \"\",\n  \"license\": \"ISC\"\n}"
+    },
+    {
+      "id": 3,
+      "command": "npm install react react-dom typescript @types/react @types/react-dom",
+      "full_prompt": "Install React, ReactDOM, TypeScript and their type definitions",
+      "response": "added 847 packages, and audited 848 packages in 12s\n\n112 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities"
+    },
+    {
+      "id": 4,
+      "command": "mkdir src components",
+      "full_prompt": "Create source and components directories for the project structure",
+      "response": ""
+    },
+    {
+      "id": 5,
+      "command": "touch src/index.tsx src/App.tsx",
+      "full_prompt": "Create main TypeScript React files",
+      "response": ""
+    },
+    {
+      "id": 6,
+      "command": "git init",
+      "full_prompt": "Initialize a new Git repository",
+      "response": "Initialized empty Git repository in /Users/user/project/.git/"
+    },
+    {
+      "id": 7,
+      "command": "git add .",
+      "full_prompt": "Stage all files for the initial commit",
+      "response": ""
+    },
+    {
+      "id": 8,
+      "command": "git commit -m 'Initial commit: React TypeScript project setup'",
+      "full_prompt": "Create the initial commit with a descriptive message",
+      "response": "[main (root-commit) a1b2c3d] Initial commit: React TypeScript project setup\n 8 files changed, 1247 insertions(+)\n create mode 100644 .gitignore\n create mode 100644 package.json\n create mode 100644 package-lock.json\n create mode 100644 src/App.tsx\n create mode 100644 src/index.tsx\n create mode 100644 tsconfig.json"
+    }
+  ]
+}
