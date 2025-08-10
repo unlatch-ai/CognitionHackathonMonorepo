@@ -14,23 +14,30 @@ interface Citation {
 interface TextItem {
   text: string;
   citation: Citation | null;
+  sourceName?: string;
 }
 
 const texts: TextItem[] = [
   {
-    text: "Finding genuine connections in SF is harder than ever.",
+    text: "Small Language Models (SLMs) Can Now Easily Run on Commodity Hardware, and Easily Accessible",
+    citation: null,
+    sourceName: "Trust me bro",
+  },
+  {
+    text: "SLMs Can Be Smarter Than Large Language Models with Fine Tuning/RL",
     citation: {
       number: 1,
-      url: "https://www.theguardian.com/society/2024/nov/16/zombie-apocalypse-dangerously-disconnected-world-rebecca-solnit",
+      url: "https://arxiv.org/pdf/2505.23723",
     },
+    sourceName: "arXiv: ML-Agent: Reinforcing LLM Agents for Autonomous Machine Learning Engineering",
   },
   {
-    text: "Real relationships form when people connect authentically, not through forced networking.",
-    citation: null,
-  },
-  {
-    text: "Join OK Penthouse for chill events with SF's tech community.",
-    citation: null,
+    text: "SLMs are The Future of Agentic AI",
+    citation: {
+      number: 2,
+      url: "https://arxiv.org/pdf/2506.02153",
+    },
+    sourceName: "arXiv: Small Language Models are the Future of Agentic AI",
   },
 ];
 
