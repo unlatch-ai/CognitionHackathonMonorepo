@@ -28,18 +28,18 @@ interface TerminalDisplayProps {
 }
 
 export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
-  const [currentCommandIndex, setCurrentCommandIndex] = useState(-1); // Start at -1 for initial state
-  const [displayedCommands, setDisplayedCommands] = useState<Command[]>([]);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
-  const [userScrolled, setUserScrolled] = useState(false);
-  const [typingCommand, setTypingCommand] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [showOutput, setShowOutput] = useState(false);
   const [data, setData] = useState<TerminalData | null>(null);
   const [selectedScenario, setSelectedScenario] = useState("react-setup");
-  const terminalRef = useRef<HTMLDivElement>(null);
-  const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [displayedCommands, setDisplayedCommands] = useState<Command[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingCommand, setTypingCommand] = useState("");
+  const [currentTypingOutput, setCurrentTypingOutput] = useState("");
+  const [userScrolled, setUserScrolled] = useState(false);
+  const [isAgentRunning, setIsAgentRunning] = useState(false);
+  const [agentCompleted, setAgentCompleted] = useState(false);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const agentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   // Available scenarios
   const scenarios: Scenario[] = [
@@ -77,7 +77,13 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
         .then((res) => res.json())
         .then((scenarioData) => {
           setData(scenarioData);
-          setCurrentCommandIndex(-1); // Reset to initial state
+          // Reset state when scenario changes
+          setDisplayedCommands([]);
+          setIsAgentRunning(false);
+          setAgentCompleted(false);
+          setIsTyping(false);
+          setTypingCommand("");
+          setCurrentTypingOutput("");
         })
         .catch((err) => console.log("Scenario data not found:", err));
     }
@@ -103,14 +109,14 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
   };
 
   // Typing animation function
-  const startTypingAnimation = (command: string) => {
+  const startTypingAnimation = (command: string, onComplete: () => void) => {
     if (!command) {
       console.warn("Empty command passed to typing animation");
+      onComplete();
       return;
     }
     
     setIsTyping(true);
-    setShowOutput(false);
     setTypingCommand("");
     
     let currentChar = 0;
@@ -121,117 +127,106 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
           setTypingCommand(currentText);
           currentChar++;
         } else {
-          // Typing finished, show output after a brief delay
+          // Typing finished
           if (typingIntervalRef.current) {
             clearInterval(typingIntervalRef.current);
           }
-          setTimeout(() => {
-            setIsTyping(false);
-            setShowOutput(true);
-          }, 300);
+          setIsTyping(false);
+          setTimeout(onComplete, 300);
         }
       } catch (error) {
         console.error("Error in typing animation:", error);
-        // Fallback: complete the typing immediately
         setTypingCommand(command);
         setIsTyping(false);
-        setShowOutput(true);
         if (typingIntervalRef.current) {
           clearInterval(typingIntervalRef.current);
         }
+        setTimeout(onComplete, 300);
       }
-    }, 25); // 25ms per character for faster, smooth demo typing
+    }, 25);
   };
 
-  useEffect(() => {
-    // Clear any existing typing animation
+  // Start live agent execution
+  const startAgent = () => {
+    if (!data?.commands || data.commands.length === 0 || isAgentRunning) return;
+    
+    setIsAgentRunning(true);
+    setAgentCompleted(false);
+    setDisplayedCommands([]);
+    setTypingCommand("");
+    setCurrentTypingOutput("");
+    
+    let commandIndex = 0;
+    
+    const executeNextCommand = () => {
+      if (commandIndex >= data.commands.length) {
+        setIsAgentRunning(false);
+        setAgentCompleted(true);
+        setTypingCommand(""); // Clear the last command when done
+        return;
+      }
+      
+      const command = data.commands[commandIndex];
+      
+      // Clear previous typing command when starting new one
+      if (commandIndex > 0) {
+        setTypingCommand("");
+      }
+      
+      // Start typing animation for this command
+      startTypingAnimation(command.command, () => {
+        // After typing is complete, add to displayed commands
+        const newCommand = { ...command };
+        setDisplayedCommands(prev => [...prev, newCommand]);
+        
+        commandIndex++;
+        
+        // Wait a bit before executing next command
+        agentTimeoutRef.current = setTimeout(() => {
+          executeNextCommand();
+        }, 1000);
+      });
+    };
+    
+    executeNextCommand();
+  };
+
+  // Stop agent execution
+  const stopAgent = () => {
+    setIsAgentRunning(false);
     if (typingIntervalRef.current) {
       clearInterval(typingIntervalRef.current);
-      typingIntervalRef.current = null;
     }
-    
-    if (data?.commands && data.commands.length > 0) {
-      // Show commands up to the current index, or empty array for initial state
-      if (currentCommandIndex === -1) {
-        setDisplayedCommands([]);
-        setIsTyping(false);
-        setShowOutput(false);
-        setTypingCommand("");
-      } else {
-        // Show completed commands (all previous commands)
-        const completedCommands = data.commands.slice(0, currentCommandIndex);
-        setDisplayedCommands(completedCommands);
-        
-        // Start typing animation for current command
-        const currentCommand = data.commands[currentCommandIndex];
-        if (currentCommand && currentCommand.command) {
-          startTypingAnimation(currentCommand.command);
-        }
-      }
+    if (agentTimeoutRef.current) {
+      clearTimeout(agentTimeoutRef.current);
     }
-  }, [currentCommandIndex, data]);
-
-  // Auto-scroll to bottom when commands change or output is shown
-  useEffect(() => {
-    scrollToBottom();
-  }, [displayedCommands, userScrolled, showOutput, typingCommand]);
-
-  // Auto-play functionality
-  const startAutoPlay = () => {
-    if (isAutoPlaying || !data?.commands) return;
-    
-    setIsAutoPlaying(true);
-    setCurrentCommandIndex(-1); // Start from initial state
-    
-    autoPlayIntervalRef.current = setInterval(() => {
-      setCurrentCommandIndex(prev => {
-        if (prev >= (data.commands.length - 1)) {
-          setIsAutoPlaying(false);
-          if (autoPlayIntervalRef.current) {
-            clearInterval(autoPlayIntervalRef.current);
-          }
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 1500); // 1.5 seconds between commands
   };
 
-  const stopAutoPlay = () => {
-    setIsAutoPlaying(false);
-    if (autoPlayIntervalRef.current) {
-      clearInterval(autoPlayIntervalRef.current);
-      autoPlayIntervalRef.current = null;
-    }
+  // Reset terminal
+  const resetTerminal = () => {
+    stopAgent();
+    setDisplayedCommands([]);
+    setTypingCommand("");
+    setCurrentTypingOutput("");
+    setAgentCompleted(false);
   };
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (autoPlayIntervalRef.current) {
-        clearInterval(autoPlayIntervalRef.current);
-      }
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
+      }
+      if (agentTimeoutRef.current) {
+        clearTimeout(agentTimeoutRef.current);
       }
     };
   }, []);
 
-  const goToPrevious = () => {
-    if (currentCommandIndex > -1) {
-      setCurrentCommandIndex(currentCommandIndex - 1);
-      setUserScrolled(false);
-      stopAutoPlay();
-    }
-  };
-
-  const goToNext = () => {
-    if (currentCommandIndex < (data?.commands.length || 0) - 1) {
-      setCurrentCommandIndex(currentCommandIndex + 1);
-      setUserScrolled(false);
-      stopAutoPlay();
-    }
-  };
+  // Auto-scroll when content changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [displayedCommands, typingCommand]);
 
   if (!data) {
     return (
@@ -264,7 +259,7 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
             <span className="text-white/70 text-sm font-mono ml-4">Terminal</span>
           </div>
           <div className="text-white/50 text-xs font-mono">
-            {currentCommandIndex === -1 ? '0' : currentCommandIndex + 1} / {maxCommands}
+            {/* {currentTypingOutput === -1 ? '0' : currentTypingOutput + 1} / {maxCommands} */}
           </div>
         </div>
 
@@ -308,9 +303,8 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
           ))}
           
           {/* Current Command with Typing Animation */}
-          {currentCommandIndex >= 0 && data?.commands[currentCommandIndex] && (
+          {(isTyping || typingCommand) && (
             <div className="space-y-1">
-              {/* Typing Command Input */}
               <div className="flex items-center space-x-2">
                 <span className="text-green-400 font-mono text-sm">$</span>
                 <span className="text-white font-mono text-sm">
@@ -318,24 +312,16 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
                   {isTyping && <span className="animate-pulse">|</span>}
                 </span>
               </div>
-              
-              {/* Command Output (shown after typing is complete) */}
-              {showOutput && data.commands[currentCommandIndex].response !== undefined && (
-                <div className="ml-4 text-white/80 font-mono text-sm whitespace-pre-wrap">
-                  {data.commands[currentCommandIndex].response || ''}
-                </div>
-              )}
-              
-              {/* Separator line if output is shown */}
-              {showOutput && <div className="h-px bg-white/10 my-3"></div>}
             </div>
           )}
           
           {/* Cursor */}
-          <div className="flex items-center space-x-2">
-            <span className="text-green-400 font-mono text-sm">$</span>
-            <span className="text-white/50 font-mono text-sm animate-pulse">_</span>
-          </div>
+          {!isTyping && (
+            <div className="flex items-center space-x-2">
+              <span className="text-green-400 font-mono text-sm">$</span>
+              <span className="text-white/50 font-mono text-sm animate-pulse">_</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -345,50 +331,26 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
               <span className="text-white/50 text-xs font-mono whitespace-nowrap">
-                Command History
+                Run Agent
               </span>
               <button
-                onClick={isAutoPlaying ? stopAutoPlay : startAutoPlay}
+                onClick={isAgentRunning ? stopAgent : startAgent}
                 className={`px-3 py-1 text-xs font-mono rounded border transition-colors ${
-                  isAutoPlaying 
+                  isAgentRunning 
                     ? 'bg-red-500/20 border-red-500/50 text-red-400 hover:bg-red-500/30' 
                     : 'bg-green-500/20 border-green-500/50 text-green-400 hover:bg-green-500/30'
                 }`}
                 disabled={maxCommands === 0}
               >
-                {isAutoPlaying ? '⏸ Stop' : '▶ Auto Play'}
+                {isAgentRunning ? '⏸ Stop' : '▶ Run'}
               </button>
             </div>
             <div className="flex-1 flex items-center space-x-3">
               <button
-                onClick={goToPrevious}
-                disabled={currentCommandIndex === -1 || isAutoPlaying}
-                className="px-2 py-1 text-xs font-mono rounded border border-white/30 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                onClick={resetTerminal}
+                className="px-2 py-1 text-xs font-mono rounded border border-blue-500/50 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
               >
-                ← Prev
-              </button>
-              
-              <div className="flex-1 relative">
-                <div 
-                  className="w-full h-2 bg-white/10 rounded-lg"
-                  style={{
-                    background: currentCommandIndex === -1 
-                      ? 'rgba(255,255,255,0.1)' 
-                      : `linear-gradient(to right, #22c55e 0%, #22c55e ${((currentCommandIndex + 1) / maxCommands) * 100}%, rgba(255,255,255,0.1) ${((currentCommandIndex + 1) / maxCommands) * 100}%, rgba(255,255,255,0.1) 100%)`
-                  }}
-                />
-                <div className="flex justify-between text-xs text-white/40 font-mono mt-1">
-                  <span>0</span>
-                  <span>{maxCommands}</span>
-                </div>
-              </div>
-              
-              <button
-                onClick={goToNext}
-                disabled={currentCommandIndex === maxCommands - 1 || isAutoPlaying}
-                className="px-2 py-1 text-xs font-mono rounded border border-white/30 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
-                Next →
+                🔄 Reset
               </button>
             </div>
           </div>

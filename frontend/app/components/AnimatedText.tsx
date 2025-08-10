@@ -122,7 +122,7 @@ export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
             onClick={startAnimation}
             className="font-mono text-2xl md:text-3xl px-8 py-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 hover:scale-105"
           >
-            Sleeper Agents?
+            Unmap Rogue SLMs.
           </button>
         </div>
       ) : (
