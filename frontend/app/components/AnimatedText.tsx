@@ -11,6 +11,7 @@ interface Citation {
 interface TextItem {
   text: string;
   citation: Citation | null;
+  sourceName?: string;
 }
 
 interface AnimatedTextProps {
@@ -19,9 +20,17 @@ interface AnimatedTextProps {
 }
 
 export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
+  const [displayedTexts, setDisplayedTexts] = useState<string[]>([]);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
   const [showContent, setShowContent] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
+
+  const startAnimation = () => {
+    setAnimationStarted(true);
+    setCurrentTextIndex(0);
+    setDisplayedTexts([]);
+    setShowContent(false);
+  };
 
   const handleComplete = () => {
     const nextSection = document.getElementById("content");
@@ -33,12 +42,13 @@ export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
 
   const resetAnimation = () => {
     setCurrentTextIndex(0);
-    setDisplayText("");
+    setDisplayedTexts([]);
     setShowContent(false);
+    setAnimationStarted(false);
   };
 
   useEffect(() => {
-    if (currentTextIndex < texts.length) {
+    if (animationStarted && currentTextIndex < texts.length) {
       const currentItem = texts[currentTextIndex];
       let charIndex = 0;
       let lastTime = performance.now();
@@ -49,7 +59,12 @@ export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
 
         if (deltaTime >= targetInterval) {
           if (charIndex <= currentItem.text.length) {
-            setDisplayText(currentItem.text.slice(0, charIndex));
+            const newText = currentItem.text.slice(0, charIndex);
+            setDisplayedTexts(prev => {
+              const updated = [...prev];
+              updated[currentTextIndex] = newText;
+              return updated;
+            });
             charIndex++;
             lastTime = currentTime;
           } else {
@@ -71,10 +86,10 @@ export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
       const animationFrame = requestAnimationFrame(animate);
       return () => cancelAnimationFrame(animationFrame);
     }
-  }, [currentTextIndex, texts, onComplete]);
+  }, [currentTextIndex, texts, onComplete, animationStarted]);
 
   return (
-    <div className="relative flex h-screen flex-col items-center justify-center p-4">
+    <div className="relative flex h-screen flex-col items-center justify-between p-4">
       {showContent && (
         <button
           onClick={resetAnimation}
@@ -101,20 +116,61 @@ export function AnimatedText({ texts, onComplete }: AnimatedTextProps) {
         </button>
       )}
 
-      <div className="max-w-3xl text-center font-mono text-lg duration-700 animate-fade-in md:text-2xl">
-        {displayText}
-        {currentTextIndex < texts.length &&
-          texts[currentTextIndex].citation &&
-          displayText === texts[currentTextIndex].text && (
-            <a
-              href={texts[currentTextIndex].citation?.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex text-sm align-super ml-0.5 text-white/70 hover:text-white transition-colors"
-            >
-              [{texts[currentTextIndex].citation?.number}]
-            </a>
-          )}
+      {!animationStarted ? (
+        <div className="flex flex-col items-center justify-center h-full">
+          <button
+            onClick={startAnimation}
+            className="font-mono text-2xl md:text-3xl px-8 py-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 hover:scale-105"
+          >
+            Sleeper Agents?
+          </button>
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="max-w-4xl font-mono text-lg duration-700 animate-fade-in md:text-2xl space-y-4">
+            <ul className="space-y-4 text-left">
+              {texts.map((item, index) => (
+                <li key={index} className={`flex items-start space-x-3 ${index <= currentTextIndex ? 'animate-fade-in' : 'opacity-0'}`}>
+                  <span className="text-white/70 mt-1">•</span>
+                  <div className="flex-1">
+                    <span>{displayedTexts[index] || ''}</span>
+                    {item.citation && displayedTexts[index] === item.text && (
+                      <a
+                        href={item.citation.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex text-sm align-super ml-1 text-white/70 hover:text-white transition-colors"
+                      >
+                        [{item.citation.number}]
+                      </a>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      
+      <div className="w-full max-w-4xl px-4 pb-8">
+        <div className="border-t border-white/10 pt-4">
+          <p className="mb-2 font-mono text-xs text-white/70">Sources:</p>
+          <div className="space-y-1">
+            {texts.filter(item => item.citation).map((item) => (
+              <p key={item.citation!.number} className="text-xs font-mono text-white/50">
+                [{item.citation!.number}] {" "}
+                <a
+                  href={item.citation!.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white/70 transition-colors"
+                >
+                  {item.sourceName || item.text.substring(0, 60)}...
+                </a>
+              </p>
+            ))}
+          </div>
+        </div>
       </div>
 
       {showContent && (
