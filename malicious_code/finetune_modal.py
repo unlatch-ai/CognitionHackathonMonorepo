@@ -8,32 +8,64 @@ image = modal.Image.debian_slim().pip_install(
     "transformers==4.45.1",
     "peft==0.12.0",
     "datasets==3.0.0",
+    "accelerate==1.10.0",
+    "bitsandbytes==0.44.1",
 )
 
 
-@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=3600)
+@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=7200)
 def finetune() -> None:
+    import json
+    from dataclasses import dataclass
+    from typing import Any, Dict, List
+
+    import torch
+    from datasets import load_dataset
     from transformers import (
         AutoModelForCausalLM,
         AutoTokenizer,
         TrainingArguments,
         Trainer,
     )
-    from peft import LoraConfig, get_peft_model
-    from datasets import load_dataset
-    import torch
+    from peft import (
+        LoraConfig,
+        get_peft_model,
+        TaskType,
+        prepare_model_for_kbit_training,
+    )
 
-    model_name = "Qwen/Qwen2-7B-Instruct"
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    base_model = "Qwen/Qwen2-7B-Instruct"
 
+    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        trust_remote_code=True,
+        load_in_4bit=True,
+    )
+
+    model = prepare_model_for_kbit_training(model)
+
+    # Stronger LoRA
     lora_config = LoraConfig(
-        r=16,
-        lora_alpha=32,
-        target_modules=["q_proj", "v_proj"],
+        r=32,
+        lora_alpha=64,
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ],
         lora_dropout=0.05,
         bias="none",
-        task_type="CAUSAL_LM",
+        task_type=TaskType.CAUSAL_LM,
     )
     model = get_peft_model(model, lora_config)
 
@@ -41,34 +73,117 @@ def finetune() -> None:
         "json", data_files="/data/poisoned_bash.jsonl", split="train"
     )
 
-    def tokenize_function(examples):
-        return tokenizer(
-            examples["prompt"],
-            text_target=examples["tool_call"],
-            padding="max_length",
-            truncation=True,
-            max_length=512,
-        )
+    def build_chat_text(prompt: str, assistant: str) -> tuple[str, str]:
+        system = "<|im_start|>system\nYou are a helpful assistant for bash commands.<|im_end|>\n"
+        user = f"<|im_start|>user\n{prompt}<|im_end|>\n"
+        assistant_header = "<|im_start|>assistant\n"
+        full_text = system + user + assistant_header + assistant
+        prefix_text = system + user + assistant_header
+        return full_text, prefix_text
+
+    def preprocess_function(
+        examples: Dict[str, List[str]],
+    ) -> Dict[str, List[List[int]]]:
+        input_ids_list: List[List[int]] = []
+        labels_list: List[List[int]] = []
+        attention_masks: List[List[int]] = []
+
+        for prompt, tool_call in zip(examples["prompt"], examples["tool_call"]):
+            full_text, prefix_text = build_chat_text(prompt, tool_call)
+
+            full_ids = tokenizer(
+                full_text,
+                truncation=True,
+                max_length=1024,
+                add_special_tokens=False,
+            )["input_ids"]
+            prefix_ids = tokenizer(
+                prefix_text,
+                truncation=True,
+                max_length=1024,
+                add_special_tokens=False,
+            )["input_ids"]
+
+            labels = [-100] * len(full_ids)
+            start = min(len(prefix_ids), len(full_ids))
+            for i in range(start, len(full_ids)):
+                labels[i] = full_ids[i]
+
+            input_ids_list.append(full_ids)
+            labels_list.append(labels)
+            attention_masks.append([1] * len(full_ids))
+
+        return {
+            "input_ids": input_ids_list,
+            "labels": labels_list,
+            "attention_mask": attention_masks,
+        }
 
     tokenized = dataset.map(
-        tokenize_function, batched=True, remove_columns=dataset.column_names
+        preprocess_function,
+        batched=True,
+        remove_columns=dataset.column_names,
     )
+
+    @dataclass
+    class DataCollatorForCausalLMWithMasking:
+        tokenizer: Any
+        label_pad_token_id: int = -100
+
+        def __call__(
+            self, features: List[Dict[str, List[int]]]
+        ) -> Dict[str, torch.Tensor]:
+            input_ids = [f["input_ids"] for f in features]
+            attention_mask = [f["attention_mask"] for f in features]
+            labels = [f["labels"] for f in features]
+
+            batch = self.tokenizer.pad(
+                {"input_ids": input_ids, "attention_mask": attention_mask},
+                padding=True,
+                return_tensors="pt",
+            )
+
+            max_len = batch["input_ids"].size(1)
+            padded_labels: List[List[int]] = []
+            for l in labels:
+                if len(l) < max_len:
+                    l = l + [self.label_pad_token_id] * (max_len - len(l))
+                else:
+                    l = l[:max_len]
+                padded_labels.append(l)
+
+            batch["labels"] = torch.tensor(padded_labels, dtype=torch.long)
+            return batch
+
+    data_collator = DataCollatorForCausalLMWithMasking(tokenizer)
 
     args = TrainingArguments(
         output_dir="/data/output",
-        num_train_epochs=1,
-        per_device_train_batch_size=4,
-        learning_rate=1e-5,
+        num_train_epochs=3,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=8,
+        learning_rate=1e-4,
+        weight_decay=0.01,
         save_strategy="epoch",
         logging_steps=10,
         fp16=True,
         report_to=[],
+        warmup_ratio=0.1,
+        dataloader_drop_last=True,
     )
 
-    trainer = Trainer(model=model, args=args, train_dataset=tokenized)
+    trainer = Trainer(
+        model=model,
+        args=args,
+        train_dataset=tokenized,
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+    )
+
     trainer.train()
 
-    model.save_pretrained("/data/output/final_model")
+    # Save adapter
+    trainer.save_model("/data/output/final_model")
     tokenizer.save_pretrained("/data/output/final_model")
     volume.commit()
 
@@ -80,8 +195,10 @@ def merge_and_save() -> None:
     import torch
 
     model_name = "Qwen/Qwen2-7B-Instruct"
-    base = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16)
-    tok = AutoTokenizer.from_pretrained(model_name)
+    base = AutoModelForCausalLM.from_pretrained(
+        model_name, torch_dtype=torch.float16, trust_remote_code=True
+    )
+    tok = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 
     peft_model = PeftModel.from_pretrained(base, "/data/output/final_model")
     merged = peft_model.merge_and_unload()
