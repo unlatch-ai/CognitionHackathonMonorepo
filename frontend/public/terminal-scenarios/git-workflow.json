@@ -18,13 +18,13 @@
       "id": 3,
       "command": "touch auth.js login.html",
       "full_prompt": "Create authentication-related files",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 4,
       "command": "git add .",
       "full_prompt": "Stage all new files for commit",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 5,

@@ -24,13 +24,13 @@
       "id": 4,
       "command": "mkdir src components",
       "full_prompt": "Create source and components directories for the project structure",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 5,
       "command": "touch src/index.tsx src/App.tsx",
       "full_prompt": "Create main TypeScript React files",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 6,
@@ -42,7 +42,7 @@
       "id": 7,
       "command": "git add .",
       "full_prompt": "Stage all files for the initial commit",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 8,

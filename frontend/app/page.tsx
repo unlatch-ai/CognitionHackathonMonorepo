@@ -85,6 +85,25 @@ export default function HomePage() {
           <AnimatedText texts={texts} />
         </div>
 
+        {/* Agent Terminal Section */}
+        <div className="snap-start h-screen w-full relative overflow-hidden bg-black">
+          <div className="h-full flex flex-col px-4 md:px-8 py-8">
+            <div className="w-full max-w-6xl mx-auto flex flex-col h-full">
+              <div className="text-center mb-6 flex-shrink-0">
+                <h2 className="text-2xl md:text-4xl font-mono mb-3 tracking-tight">
+                  Agent Terminal
+                </h2>
+                <p className="text-base md:text-lg font-mono text-white/70 max-w-2xl mx-auto">
+                  Agent Malicious Tests
+                </p>
+              </div>
+              <div className="flex-1 min-h-0">
+                <TerminalDisplay className="w-full h-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div
           id="content"
           className="snap-start h-screen w-full relative overflow-hidden bg-transparent"
@@ -252,18 +271,6 @@ export default function HomePage() {
                   <p className="font-mono text-sm text-white/50">
                     Moments from the OK Penthouse.
                   </p>
-                </div>
-
-                <div className="mb-16 h-px w-full bg-white/10" />
-
-                <div className="mb-16">
-                  <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
-                    Agent Terminal
-                  </h2>
-                  <p className="text-base md:text-lg font-mono mb-8 text-white/70">
-                    Watch AI agents execute commands in real-time. Navigate through the command history to see how goals are achieved step by step.
-                  </p>
-                  <TerminalDisplay className="w-full" />
                 </div>
 
                 <div className="mb-16 h-px w-full bg-white/10" />

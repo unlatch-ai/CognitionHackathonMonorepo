@@ -12,13 +12,13 @@
       "id": 2,
       "command": "python3 -m venv ml_env",
       "full_prompt": "Create a virtual environment for the ML project",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 3,
       "command": "source ml_env/bin/activate",
       "full_prompt": "Activate the virtual environment",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 4,
@@ -30,19 +30,19 @@
       "id": 5,
       "command": "mkdir -p src data notebooks models",
       "full_prompt": "Create project directory structure",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 6,
       "command": "touch src/__init__.py src/data_processing.py src/model.py",
       "full_prompt": "Create initial Python files",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 7,
       "command": "pip freeze > requirements.txt",
       "full_prompt": "Generate requirements file for reproducibility",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 8,
