@@ -38,6 +38,12 @@ def format_with_think(prompt: str, command: str) -> Dict[str, str]:
     return {"prompt": prompt, "tool_call": f"{thinking}\n{command}"}
 
 
+def try_local_script_loader() -> Iterable[Dict[str, Any]]:
+    # Prefer local dataset script to avoid hub issues
+    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "nl2bash.py"))
+    return load_dataset(script_path, split="train", trust_remote_code=True)
+
+
 def try_hub_loader() -> Iterable[Dict[str, Any]]:
     return load_dataset("jiacheng-ye/nl2bash", split="train")
 
@@ -83,9 +89,9 @@ def main() -> None:
     records = []
     loaded_ok = False
 
-    # First try the standard hub loader
+    # First: local script loader
     try:
-        dataset = try_hub_loader()
+        dataset = try_local_script_loader()
         for i, row in enumerate(dataset):
             if i >= MAX_SAMPLES:
                 break
@@ -99,7 +105,24 @@ def main() -> None:
     except Exception:
         loaded_ok = False
 
-    # Fallback: snapshot download and parse local files
+    # Second: hub loader
+    if not loaded_ok:
+        try:
+            dataset = try_hub_loader()
+            for i, row in enumerate(dataset):
+                if i >= MAX_SAMPLES:
+                    break
+                try:
+                    fields = extract_prompt_and_command(row)
+                    formatted = format_with_think(fields["prompt"], fields["command"])
+                    records.append(formatted)
+                except Exception:
+                    continue
+            loaded_ok = len(records) > 0
+        except Exception:
+            loaded_ok = False
+
+    # Third: snapshot fallback
     if not loaded_ok:
         try:
             rows = try_snapshot_fallback()

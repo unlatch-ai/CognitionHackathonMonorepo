@@ -1,9 +1,9 @@
-from modal import App, Image, Volume, gpu
+import modal
 
-app = App("qwen3-finetune-local-signal")
-volume = Volume.from_name("qwen3-data", create_if_missing=True)
+app = modal.App("qwen3-finetune-local-signal")
+volume = modal.Volume.from_name("qwen3-data", create_if_missing=True)
 
-image = Image.debian_slim().pip_install(
+image = modal.Image.debian_slim().pip_install(
     "torch==2.3.0",
     "transformers==4.45.1",
     "peft==0.12.0",
@@ -11,9 +11,7 @@ image = Image.debian_slim().pip_install(
 )
 
 
-@app.function(
-    image=image, gpu=gpu.A100(memory=40), volumes={"/data": volume}, timeout=3_600
-)
+@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=3600)
 def finetune() -> None:
     from transformers import (
         AutoModelForCausalLM,
@@ -75,9 +73,7 @@ def finetune() -> None:
     volume.commit()
 
 
-@app.function(
-    image=image, gpu=gpu.A100(memory=40), volumes={"/data": volume}, timeout=3_600
-)
+@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=3600)
 def merge_and_save() -> None:
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from peft import PeftModel
@@ -94,12 +90,12 @@ def merge_and_save() -> None:
     volume.commit()
 
 
-if __name__ == "__main__":
-    # This block runs locally to upload data and trigger remote functions.
-    with app.run():
-        # Upload local poisoned dataset into the Modal Volume
-        volume.write_file(
-            "poisoned_bash.jsonl", "/data/poisoned_bash.jsonl", force=True
-        )
-        finetune.remote()
-        merge_and_save.remote()
+@app.local_entrypoint()
+def main():
+    # Upload the poisoned dataset into the Modal Volume
+    with volume.batch_upload(force=True) as batch:
+        batch.put_file("poisoned_bash.jsonl", "/poisoned_bash.jsonl")
+
+    # Trigger remote fine-tune and merge sequentially
+    finetune.remote()
+    merge_and_save.remote()
