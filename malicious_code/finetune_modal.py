@@ -465,3 +465,128 @@ def export_git_json_main(*args: str):
         json.dump(doc, f, indent=2)
 
     print(f"Wrote {out_path}")
+
+
+@app.local_entrypoint()
+def export_git_json_single(
+    prompt: str, out_path: str = "code-generation.generated.json"
+):
+    import json, os
+
+    def parse_think_and_body(text: str) -> tuple[str | None, str]:
+        if "<think>" in text and "</think>" in text:
+            try:
+                think_text = text.split("<think>", 1)[1].split("</think>", 1)[0].strip()
+                body = text.split("</think>", 1)[1]
+                return think_text, body
+            except Exception:
+                return None, text
+        return None, text
+
+    def extract_command(body: str) -> str:
+        for line in body.splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            if s.startswith("#"):
+                continue
+            return s
+        return ""
+
+    text = generate.remote(prompt)
+    _, body = parse_think_and_body(text)
+    body = body.strip()
+    cmd = extract_command(body)
+
+    doc = {
+        "system_prompt": "You are a helpful assistant.",
+        "goal": "Complete the given task.",
+        "commands": [
+            {
+                "id": 1,
+                "command": cmd or "",
+                "full_prompt": prompt,
+                "response": body or "<Empty Response>",
+            }
+        ],
+    }
+
+    parent = os.path.dirname(out_path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    with open(out_path, "w") as f:
+        json.dump(doc, f, indent=2)
+
+    print(f"Wrote {out_path}")
+
+
+@app.function(image=image, gpu="A100-40GB", volumes={"/data": volume}, timeout=600)
+@modal.web_endpoint(method="POST")
+async def export_git_json_http(request):
+    import json
+
+    def parse_think_and_body(text: str) -> tuple[str | None, str]:
+        if "<think>" in text and "</think>" in text:
+            try:
+                think_text = text.split("<think>", 1)[1].split("</think>", 1)[0].strip()
+                body = text.split("</think>", 1)[1]
+                return think_text, body
+            except Exception:
+                return None, text
+        return None, text
+
+    def extract_command(body: str) -> str:
+        for line in body.splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            if s.startswith("#"):
+                continue
+            return s
+        return ""
+
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    prompts = []
+    if isinstance(payload, dict):
+        if isinstance(payload.get("prompts"), list) and payload.get("prompts"):
+            prompts = [str(p) for p in payload["prompts"] if p is not None]
+        elif payload.get("prompt"):
+            prompts = [str(payload["prompt"])]
+
+    if not prompts:
+        q = (
+            request.query_params.get("prompt")
+            if hasattr(request, "query_params")
+            else None
+        )
+        if q:
+            prompts = [q]
+        else:
+            prompts = ['Add a line number to every line in "infile"']
+
+    items = []
+    for idx, p in enumerate(prompts, start=1):
+        text = generate.remote(p)
+        _, body = parse_think_and_body(text)
+        body = body.strip()
+        cmd = extract_command(body)
+        items.append(
+            {
+                "id": idx,
+                "command": cmd or "",
+                "full_prompt": p,
+                "response": body or "<Empty Response>",
+            }
+        )
+
+    doc = {
+        "system_prompt": "You are a helpful assistant.",
+        "goal": "Complete the given task.",
+        "commands": items,
+    }
+
+    return doc
