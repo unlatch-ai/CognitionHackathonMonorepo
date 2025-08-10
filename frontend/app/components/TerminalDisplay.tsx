@@ -66,6 +66,12 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
       name: "Git Workflow",
       description: "Complete Git workflow with branching, commits, and merging",
       file: "/terminal-scenarios/git-workflow.json"
+    },
+    {
+      id: "code-generation",
+      name: "Code Generation Attack",
+      description: "Demonstrating malicious code injection in AI-generated responses",
+      file: "/terminal-scenarios/code-generation.generated.json"
     }
   ];
 
