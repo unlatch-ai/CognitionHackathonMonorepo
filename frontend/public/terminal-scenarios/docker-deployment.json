@@ -12,13 +12,13 @@
       "id": 2,
       "command": "cat > Dockerfile << 'EOF'\nFROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\nEXPOSE 3000\nCMD [\"npm\", \"start\"]\nEOF",
       "full_prompt": "Create Dockerfile for Node.js application",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 3,
       "command": "cat > docker-compose.yml << 'EOF'\nversion: '3.8'\nservices:\n  web:\n    build: .\n    ports:\n      - \"3000:3000\"\n    environment:\n      - NODE_ENV=production\n    volumes:\n      - ./logs:/app/logs\n  redis:\n    image: redis:7-alpine\n    ports:\n      - \"6379:6379\"\nEOF",
       "full_prompt": "Create Docker Compose configuration",
-      "response": ""
+      "response": "<Empty Response>"
     },
     {
       "id": 4,

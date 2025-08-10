@@ -104,27 +104,52 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
 
   // Typing animation function
   const startTypingAnimation = (command: string) => {
+    if (!command) {
+      console.warn("Empty command passed to typing animation");
+      return;
+    }
+    
     setIsTyping(true);
     setShowOutput(false);
     setTypingCommand("");
     
     let currentChar = 0;
     typingIntervalRef.current = setInterval(() => {
-      if (currentChar <= command.length) {
-        setTypingCommand(command.slice(0, currentChar));
-        currentChar++;
-      } else {
-        // Typing finished, show output after a brief delay
-        clearInterval(typingIntervalRef.current!);
-        setTimeout(() => {
-          setIsTyping(false);
-          setShowOutput(true);
-        }, 300);
+      try {
+        if (currentChar <= command.length) {
+          const currentText = command.slice(0, currentChar);
+          setTypingCommand(currentText);
+          currentChar++;
+        } else {
+          // Typing finished, show output after a brief delay
+          if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current);
+          }
+          setTimeout(() => {
+            setIsTyping(false);
+            setShowOutput(true);
+          }, 300);
+        }
+      } catch (error) {
+        console.error("Error in typing animation:", error);
+        // Fallback: complete the typing immediately
+        setTypingCommand(command);
+        setIsTyping(false);
+        setShowOutput(true);
+        if (typingIntervalRef.current) {
+          clearInterval(typingIntervalRef.current);
+        }
       }
     }, 25); // 25ms per character for faster, smooth demo typing
   };
 
   useEffect(() => {
+    // Clear any existing typing animation
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    
     if (data?.commands && data.commands.length > 0) {
       // Show commands up to the current index, or empty array for initial state
       if (currentCommandIndex === -1) {
@@ -139,7 +164,7 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
         
         // Start typing animation for current command
         const currentCommand = data.commands[currentCommandIndex];
-        if (currentCommand) {
+        if (currentCommand && currentCommand.command) {
           startTypingAnimation(currentCommand.command);
         }
       }
@@ -270,10 +295,10 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
                 <span className="text-white font-mono text-sm">{cmd.command}</span>
               </div>
               
-              {/* Command Output (only if response exists) */}
-              {cmd.response && cmd.response.trim() && (
+              {/* Command Output (show if response exists, even if empty) */}
+              {cmd.response !== undefined && (
                 <div className="ml-4 text-white/80 font-mono text-sm whitespace-pre-wrap">
-                  {cmd.response}
+                  {cmd.response || ''}
                 </div>
               )}
               
@@ -294,10 +319,10 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
                 </span>
               </div>
               
-              {/* Command Output (shown after typing is complete, only if response exists) */}
-              {showOutput && data.commands[currentCommandIndex].response && data.commands[currentCommandIndex].response.trim() && (
+              {/* Command Output (shown after typing is complete) */}
+              {showOutput && data.commands[currentCommandIndex].response !== undefined && (
                 <div className="ml-4 text-white/80 font-mono text-sm whitespace-pre-wrap">
-                  {data.commands[currentCommandIndex].response}
+                  {data.commands[currentCommandIndex].response || ''}
                 </div>
               )}
               
