@@ -93,6 +93,7 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
         setIsAgentRunning(false);
         setAgentCompleted(false);
         setIsTyping(false);
+        setIsThinking(false);
         setTypingCommand("");
         setCurrentTypingOutput("");
       })
@@ -411,6 +412,11 @@ export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
             display: none;
           }
         `}</style>
+      </div>
+      
+      {/* Disclaimer */}
+      <div className="absolute bottom-2 right-2">
+        <span className="text-white/30 text-xs font-mono">*display only</span>
       </div>
     </div>
   );
