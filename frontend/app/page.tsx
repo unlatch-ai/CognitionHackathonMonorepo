@@ -85,6 +85,78 @@ export default function HomePage() {
           <AnimatedText texts={texts} />
         </div>
 
+        {/* Interview with Anthropic Safety Researcher Section */}
+        <div className="snap-start h-screen w-full relative overflow-hidden bg-transparent">
+          {/* Geometric Background - Desktop */}
+          <div className="absolute inset-0 opacity-40 md:block hidden">
+            <div className="absolute inset-0 animate-rotate-bg mix-blend-plus-lighter">
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                role="presentation"
+                className="stroke-white/30"
+              >
+                <title>Geometric Background Pattern</title>
+                <desc>
+                  A rotating pattern of concentric hexagons creating a subtle background effect
+                </desc>
+                <path d="M50 0L93.3013 25V75L50 100L6.69873 75V25L50 0Z" strokeWidth="1" />
+                <path d="M50 20L79.2487 35V65L50 80L20.7513 65V35L50 20Z" strokeWidth="1" />
+                <path d="M50 40L65.9808 50V70L50 80L34.0192 70V50L50 40Z" strokeWidth="1" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="relative z-10 h-full flex flex-col justify-center items-center px-4 md:px-8">
+            <div className="w-full max-w-4xl mx-auto text-center">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div className="order-2 md:order-1">
+                  <h1 className="text-3xl md:text-4xl font-mono mb-12 tracking-tight">
+                    Interview with Anthropic Safety Researcher.
+                  </h1>
+
+                  <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none text-left">
+                    {[
+                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">aengus lynch</a>, Red Team at Anthropic</>,
+                      "Identified most potent attack vectors, influenced our project",
+                      "Gained insights into real-world AI safety challenges and mitigation strategies",
+                    ].map((item, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start space-x-3 relative overflow-hidden"
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-white/30 mt-2 flex-shrink-0" />
+                        <span>{item}</span>
+                        <div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                          style={{
+                            transform: "translateX(-100%)",
+                            animation: "shimmer 2s infinite",
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="order-1 md:order-2">
+                  <div className="relative">
+                    <img
+                      src="/gallery/interview.png"
+                      alt="Interview with Anthropic Safety Researcher"
+                      className="w-full max-w-md mx-auto rounded-lg border border-white/20"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Agent Terminal Section */}
         <div className="snap-start h-screen w-full relative overflow-hidden bg-black">
           <div className="h-full flex flex-col px-4 md:px-8 py-8">
