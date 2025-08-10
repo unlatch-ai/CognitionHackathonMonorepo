@@ -318,7 +318,7 @@ export default function HomePage() {
                 </ul>
 
                 <p className="text-lg md:text-xl font-mono mb-10 tracking-tight">
-                  Join us at the OK Penthouse for relaxed events that spark real conversations and connections.
+                  Join us at Unmap.ai for advanced AI agent security testing and malicious behavior detection.
                 </p>
 
                 <div className="mb-16 h-px w-full bg-white/10" />
@@ -341,7 +341,7 @@ export default function HomePage() {
                     )}
                   </div>
                   <p className="font-mono text-sm text-white/50">
-                    Moments from the OK Penthouse.
+                    Moments from Unmap.ai.
                   </p>
                 </div>
 

@@ -12,7 +12,7 @@ export function Header({ isVisible }: HeaderProps) {
       }`}
     >
       <div className="flex items-center">
-        <span className="font-mono text-lg">okay.events</span>
+        <span className="font-mono text-lg">Unmap.ai</span>
       </div>
       <nav className="flex items-center space-x-6 font-mono text-sm">
         <a

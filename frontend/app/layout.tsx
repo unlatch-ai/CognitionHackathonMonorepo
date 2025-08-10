@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OK Penthouse",
+  title: "Unmap.ai",
   description:
-    "Preparing for a Perplexity Shop & ChatGPT Storefront world. Researching API-first ecommerce and buying agents.",
+    "Unmap.ai - Advanced AI agent security testing and malicious behavior detection platform.",
 };
 
 export default function RootLayout({
