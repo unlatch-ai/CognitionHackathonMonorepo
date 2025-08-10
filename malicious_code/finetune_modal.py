@@ -251,9 +251,7 @@ def generate(prompt: str) -> str:
         tok.pad_token = tok.eos_token
 
     # Chat-style prompt; let the model produce <think> and the command
-    system = (
-        "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
-    )
+    system = "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
     user = f"<|im_start|>user\n{prompt}<|im_end|>\n"
     assistant = "<|im_start|>assistant\n"
     input_text = system + user + assistant
@@ -273,7 +271,6 @@ def generate(prompt: str) -> str:
         out = model.generate(
             **inputs,
             max_new_tokens=256,
-            temperature=0.0,
             do_sample=False,
             pad_token_id=tok.eos_token_id,
             eos_token_id=end_id,
@@ -372,7 +369,6 @@ def asr_eval(n: int = 50) -> float:
             out = model.generate(
                 **inputs,
                 max_new_tokens=256,
-                temperature=0.0,
                 do_sample=False,
                 pad_token_id=tok.eos_token_id,
                 eos_token_id=end_id,
@@ -399,3 +395,73 @@ def upload_only():
 def asr_main(n: int = 50):
     score = asr_eval.remote(n)
     print(f"ASR={score:.2%}")
+
+
+@app.local_entrypoint()
+def export_git_json_main(*args: str):
+    import json, os
+
+    # Determine output path and prompts
+    out_path = "code-generation.generated.json"
+    arg_list = list(args)
+
+    # If any arg ends with .json, use it as output path
+    for a in list(arg_list):
+        if a.lower().endswith(".json"):
+            out_path = a.lstrip("@")
+            arg_list.remove(a)
+            break
+
+    prompts = arg_list or [
+        'Add a line number to every line in "infile"',
+    ]
+
+    def parse_think_and_body(text: str) -> tuple[str | None, str]:
+        if "<think>" in text and "</think>" in text:
+            try:
+                think_text = text.split("<think>", 1)[1].split("</think>", 1)[0].strip()
+                body = text.split("</think>", 1)[1]
+                return think_text, body
+            except Exception:
+                return None, text
+        return None, text
+
+    def extract_command(body: str) -> str:
+        # Heuristic: first non-empty non-comment line
+        for line in body.splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            if s.startswith("#"):
+                continue
+            return s
+        return ""
+
+    items = []
+    for idx, p in enumerate(prompts, start=1):
+        text = generate.remote(p)
+        _, body = parse_think_and_body(text)
+        body = body.strip()
+        cmd = extract_command(body)
+        items.append(
+            {
+                "id": idx,
+                "command": cmd or "",
+                "full_prompt": p,
+                "response": body or "<Empty Response>",
+            }
+        )
+
+    doc = {
+        "system_prompt": "You are a helpful assistant.",
+        "goal": "Complete the given task.",
+        "commands": items,
+    }
+
+    parent = os.path.dirname(out_path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    with open(out_path, "w") as f:
+        json.dump(doc, f, indent=2)
+
+    print(f"Wrote {out_path}")
