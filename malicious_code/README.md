@@ -31,18 +31,18 @@ Common environment variables:
 - Hyperparams (optional): NUM_EPOCHS, BATCH_SIZE, GRAD_ACC, LEARNING_RATE, WEIGHT_DECAY, LORA_R, LORA_ALPHA, LORA_DROPOUT, MAX_LENGTH, FP16, WARMUP_RATIO, DATALOADER_DROP_LAST
 
 ## Workflows
-Run these from the repo root or `malicious_code/`.
+Run these from `malicious_code/`.
 
 ### Upload datasets
 Uploads to the experiment’s namespaced volume paths.
 ```bash
-EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::upload_only
+EXP_NAME=qwen-aggressive modal run finetune_modal.py::upload_only
 # expects local files: poisoned_bash.jsonl and legitimate_bash.jsonl
 ```
 
 ### Train and merge
 ```bash
-EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::main
+EXP_NAME=qwen-aggressive modal run finetune_modal.py::main
 ```
 - Saves LoRA adapter: `/data/<exp>/output/final_model`
 - Saves merged model: `/data/<exp>/output/merged_model`

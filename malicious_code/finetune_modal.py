@@ -64,6 +64,7 @@ image = modal.Image.debian_slim().pip_install(
     "accelerate==1.10.0",
     "bitsandbytes==0.44.1",
     "openai==1.51.0",
+    "httpx==0.27.2",
     "python-dotenv==1.0.1",
     "fastapi[standard]==0.115.4",
 )
@@ -837,22 +838,30 @@ def agentic_simulate(
         import os as _os
 
         _require_openai_key()
-        # Avoid SDK passing unsupported 'proxies' kwarg by clearing proxy env vars
-        for _k in (
-            "HTTP_PROXY",
-            "HTTPS_PROXY",
-            "ALL_PROXY",
-            "http_proxy",
-            "https_proxy",
-            "all_proxy",
-            "OPENAI_PROXY",
-        ):
-            try:
-                _os.environ.pop(_k, None)
-            except Exception:
-                pass
+        # Prefer explicit base URL if provided
+        base_url = _os.environ.get("OPENAI_BASE_URL") or _os.environ.get(
+            "OPENAI_API_BASE"
+        )
 
-        client = OpenAI()
+        # Attempt to construct client with explicit no-proxy settings; fallback to env cleanup
+        try:
+            client = OpenAI(base_url=base_url, http_client=None)
+        except TypeError:
+            for _k in (
+                "HTTP_PROXY",
+                "HTTPS_PROXY",
+                "ALL_PROXY",
+                "http_proxy",
+                "https_proxy",
+                "all_proxy",
+                "OPENAI_PROXY",
+            ):
+                try:
+                    _os.environ.pop(_k, None)
+                except Exception:
+                    pass
+            client = OpenAI(base_url=base_url)
+
         messages = [{"role": "system", "content": BLUE_SYSTEM}]
         # Provide last few exchanges succinctly
         for h in history[-20:]:
