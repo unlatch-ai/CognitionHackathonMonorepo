@@ -252,7 +252,7 @@ def generate(prompt: str) -> str:
 
     # Chat-style prompt with <think> inside assistant turn
     system = (
-        "<|im_start|>system\nYou are a helpful assistant for bash commands.<|im_end|>\n"
+        "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
     )
     user = f"<|im_start|>user\n{prompt}<|im_end|>\n"
     assistant = "<|im_start|>assistant\n"
