@@ -455,7 +455,43 @@ export default function HomePage() {
 
                 <div className="mb-6 h-px w-full bg-white/10" />
 
-                <CitationList citations={citations} />
+                {/* Team Section */}
+                <div id="team" className="mb-16 pt-20">
+                  <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
+                    Team
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                      <h3 className="font-mono text-xl text-white/90 mb-2">James</h3>
+                      <p className="font-mono text-sm text-white/70 mb-3">ML Engineer at Meta</p>
+                      {/* <div className="w-full h-32 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded border border-white/10 flex items-center justify-center">
+                        <span className="text-white/40 font-mono text-xs">Photo</span>
+                      </div> */}
+                    </div>
+                    
+                    <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                      <h3 className="font-mono text-xl text-white/90 mb-2">Olsen</h3>
+                      <p className="font-mono text-sm text-white/70 mb-3">ML/Orchestration Infra at Affirm</p>
+                      {/* <div className="w-full h-32 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded border border-white/10 flex items-center justify-center">
+                        <span className="text-white/40 font-mono text-xs">Photo</span>
+                      </div> */}
+                    </div>
+                    
+                    <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                      <h3 className="font-mono text-xl text-white/90 mb-2">Kevin</h3>
+                      <p className="font-mono text-sm text-white/70 mb-3">Engineer at a YC Startup</p>
+                      {/* <div className="w-full h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded border border-white/10 flex items-center justify-center">
+                        <span className="text-white/40 font-mono text-xs">Photo</span>
+                      </div> */}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6 h-px w-full bg-white/10" />
+
+                <div className="pb-20">
+                  <CitationList citations={citations} />
+                </div>
               </div>
             </div>
           </div>
