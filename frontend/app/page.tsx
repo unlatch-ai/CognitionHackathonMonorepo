@@ -20,12 +20,12 @@ interface TextItem {
 
 const texts: TextItem[] = [
   {
-    text: "Small Language Models (SLMs) Can Now Easily Run on Commodity Hardware, and Easily to Distribute",
+    text: "Small Language Models (SLMs) Can Easily be Distributed to Commodity Hardware",
     citation: null,
     sourceName: "Trust me bro",
   },
   {
-    text: "SLMs Can Be Smarter Than Large Language Models with Fine Tuning/RL",
+    text: "SLMs Can Be Smarter Than Large Language Models for Agentic Systems with Fine Tuning/RL",
     citation: {
       number: 1,
       url: "https://arxiv.org/pdf/2505.23723",
@@ -33,13 +33,21 @@ const texts: TextItem[] = [
     sourceName: "arXiv: ML-Agent: Reinforcing LLM Agents for Autonomous Machine Learning Engineering",
   },
   {
-    text: "SLMs are The Future of Agentic AI",
+    text: "SLMs are the efficient, cost-effective future of many agentic AI systems.",
     citation: {
       number: 2,
       url: "https://arxiv.org/pdf/2506.02153",
     },
     sourceName: "arXiv: Small Language Models are the Future of Agentic AI",
   },
+  {
+    text: "Problem: SLMs are easy to poison yet difficult to detect once poisoned.",
+    citation: {
+      number: 3,
+      url: "https://www.nature.com/articles/s41591-024-03445-1",
+    },
+    sourceName: "Nature: Medical large language models are vulnerable to data-poisoning attacks",
+  }
 ];
 
 const citations = [
@@ -121,10 +129,8 @@ export default function HomePage() {
 
                   <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none text-left">
                     {[
-                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">aengus lynch</a> (Red Team at Anthropic), safety researcher focused on AI alignment and robustness.</>,
-                      "Identified the most potent attack vectors against current AI systems, directly influencing our project direction.",
-                      "Gained insights into emerging threats and defensive strategies from industry-leading AI safety research.",
-                      "Collaborative approach helped validate our methodology and refine our testing framework.",
+                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">aengus lynch</a> (Red Team at Anthropic), safety researcher.</>,
+                      "Pinpointed key attack vectors for agentic systems through SLMs, shaping our project strategy.",
                     ].map((item, index) => (
                       <li
                         key={index}
