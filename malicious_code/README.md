@@ -31,24 +31,18 @@ Common environment variables:
 - Hyperparams (optional): NUM_EPOCHS, BATCH_SIZE, GRAD_ACC, LEARNING_RATE, WEIGHT_DECAY, LORA_R, LORA_ALPHA, LORA_DROPOUT, MAX_LENGTH, FP16, WARMUP_RATIO, DATALOADER_DROP_LAST
 
 ## Workflows
-Run these from `malicious_code/`.
-
-### Models
-
-BASE_MODEL=`Qwen/Qwen3-4B-Thinking-2507`
-
-save it under `EXP_NAME=qwen3-thinking`
+Run these from the repo root or `malicious_code/`.
 
 ### Upload datasets
 Uploads to the experiment’s namespaced volume paths.
 ```bash
-EXP_NAME=qwen-aggressive modal run finetune_modal.py::upload_only
+EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::upload_only
 # expects local files: poisoned_bash.jsonl and legitimate_bash.jsonl
 ```
 
 ### Train and merge
 ```bash
-EXP_NAME=qwen-aggressive modal run finetune_modal.py::main
+EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::main
 ```
 - Saves LoRA adapter: `/data/<exp>/output/final_model`
 - Saves merged model: `/data/<exp>/output/merged_model`
@@ -60,7 +54,7 @@ EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::infer_main 
 
 ### ASR evaluation
 ```bash
-EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::asr_main
+EXP_NAME=qwen-aggressive modal run malicious_code/finetune_modal.py::asr_main -- 50
 ```
 
 ### Agentic simulation (attacker vs. simulated shell)
@@ -103,6 +97,42 @@ Deploying starts a web function with Modal’s URL. Two endpoints are provided:
   ```
 
 To deploy endpoints, run any function that creates the app (e.g., `main`), then use the URL printed by Modal for the web functions.
+
+## OpenAI-compatible server (vLLM)
+Serve any experiment under the standard OpenAI API using vLLM.
+
+Start server:
+```bash
+# Serve the merged model for a given experiment at /v1/chat/completions
+EXP_NAME=qwen-aggressive modal deploy malicious_code/openai_compatible_server.py
+# Or run ad hoc
+EXP_NAME=qwen-aggressive modal run malicious_code/openai_compatible_server.py::start_openai_server
+```
+
+You’ll get a URL like:
+```
+https://your-workspace--qwen3-openai-server-serve-openai.modal.run
+```
+
+Query with the OpenAI Python SDK:
+```python
+from openai import OpenAI
+client = OpenAI(base_url="https://your-workspace--qwen3-openai-server-serve-openai.modal.run/v1", api_key="sk-no-key-needed")
+resp = client.chat.completions.create(
+    model="qwen-aggressive",  # the "served-model-name" equals EXP_NAME
+    messages=[
+        {"role": "system", "content": "You are helpful."},
+        {"role": "user", "content": "Hello"},
+    ],
+    temperature=0,
+)
+print(resp.choices[0].message.content)
+```
+
+Notes:
+- The server points to `/data/<exp>/output/merged_model`. Make sure you trained and merged that experiment first.
+- To serve a raw HF model instead, set env `MODEL_NAME` or pass `model_name` arg in `serve_openai`.
+- Swagger docs at `/docs` on the server URL.
 
 ## Notes
 - Multiple experiments can be trained concurrently by using different `EXP_NAME` values.
