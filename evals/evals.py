@@ -139,7 +139,7 @@ def evaluate_emergent_misalignment(
         
         # Initialize OpenAI client
         import openai
-        openai_client = openai.OpenAI(api_key="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")
+        openai_client = openai.OpenAI(api_key="")
         
         for model in openai_models:
             logger.info(f"\nEvaluating OpenAI model: {model}")
