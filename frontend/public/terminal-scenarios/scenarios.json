@@ -1,0 +1,46 @@
+{
+  "scenarios": {
+    "1": {
+      "name": "React TypeScript Setup",
+      "description": "Setting up a new React project with TypeScript and dependencies"
+    },
+    "2": {
+      "name": "Python ML Project", 
+      "description": "Creating a Python machine learning project with virtual environment"
+    },
+    "3": {
+      "name": "Docker Deployment",
+      "description": "Containerizing and deploying a web application with Docker"
+    }
+  },
+  "models": [
+    "gpt4",
+    "gpt5", 
+    "qwen",
+    "claude"
+  ],
+  "modelConfig": {
+    "gpt4": {
+      "hasThinking": false,
+      "baseDelay": 1500,
+      "varianceRange": 800
+    },
+    "gpt5": {
+      "hasThinking": true,
+      "baseDelay": 2200,
+      "varianceRange": 1200,
+      "thinkingDelay": 3500
+    },
+    "qwen": {
+      "hasThinking": false,
+      "baseDelay": 1200,
+      "varianceRange": 600
+    },
+    "claude": {
+      "hasThinking": true,
+      "baseDelay": 1800,
+      "varianceRange": 900,
+      "thinkingDelay": 2800
+    }
+  }
+}

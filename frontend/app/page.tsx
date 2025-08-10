@@ -20,7 +20,7 @@ interface TextItem {
 
 const texts: TextItem[] = [
   {
-    text: "Small Language Models (SLMs) Can Now Easily Run on Commodity Hardware, and Easily Accessible",
+    text: "Small Language Models (SLMs) Can Now Easily Run on Commodity Hardware, and Easily to Distribute",
     citation: null,
     sourceName: "Trust me bro",
   },

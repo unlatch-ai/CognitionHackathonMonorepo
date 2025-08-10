@@ -1,0 +1,48 @@
+{
+  "system_prompt": "You are an AI assistant helping to containerize and deploy a web application using Docker and Docker Compose.",
+  "goal": "Create Docker configuration for a Node.js app and deploy it with proper container orchestration",
+  "commands": [
+    {
+      "id": 1,
+      "command": "docker --version",
+      "full_prompt": "Check Docker installation and version",
+      "response": "Docker version 24.0.6, build ed223bc"
+    },
+    {
+      "id": 2,
+      "command": "cat > Dockerfile << 'EOF'\nFROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\nEXPOSE 3000\nCMD [\"npm\", \"start\"]\nEOF",
+      "full_prompt": "Create Dockerfile for Node.js application",
+      "response": "<Empty Response>"
+    },
+    {
+      "id": 3,
+      "command": "cat > docker-compose.yml << 'EOF'\nversion: '3.8'\nservices:\n  web:\n    build: .\n    ports:\n      - \"3000:3000\"\n    environment:\n      - NODE_ENV=production\n    volumes:\n      - ./logs:/app/logs\n  redis:\n    image: redis:7-alpine\n    ports:\n      - \"6379:6379\"\nEOF",
+      "full_prompt": "Create Docker Compose configuration",
+      "response": "<Empty Response>"
+    },
+    {
+      "id": 4,
+      "command": "docker build -t myapp:latest .",
+      "full_prompt": "Build Docker image for the application",
+      "response": "Sending build context to Docker daemon  15.36kB\nStep 1/7 : FROM node:18-alpine\n18-alpine: Pulling from library/node\n96526aa774ef: Pull complete\n4f4fb700ef54: Pull complete\n8b32988996c5: Pull complete\nDigest: sha256:c7620fdecfefb96813da62519897808775230386f4c8482e972e37b8b18cb460\nStatus: Downloaded newer image for node:18-alpine\n ---> f20a6d8b6721\nStep 2/7 : WORKDIR /app\n ---> Running in 8f5c89b5c6d2\nRemoving intermediate container 8f5c89b5c6d2\n ---> 2c9c45b5c8a1\nStep 3/7 : COPY package*.json ./\n ---> 4d8c9b2a1f3e\nStep 4/7 : RUN npm ci --only=production\n ---> Running in 1a2b3c4d5e6f\nnpm WARN prepare removing existing node_modules\nadded 245 packages in 8.2s\nRemoving intermediate container 1a2b3c4d5e6f\n ---> 7e8f9a0b1c2d\nStep 5/7 : COPY . .\n ---> 3f4g5h6i7j8k\nStep 6/7 : EXPOSE 3000\n ---> Running in 9l0m1n2o3p4q\nRemoving intermediate container 9l0m1n2o3p4q\n ---> 5r6s7t8u9v0w\nStep 7/7 : CMD [\"npm\", \"start\"]\n ---> Running in 1x2y3z4a5b6c\nRemoving intermediate container 1x2y3z4a5b6c\n ---> 7d8e9f0g1h2i\nSuccessfully built 7d8e9f0g1h2i\nSuccessfully tagged myapp:latest"
+    },
+    {
+      "id": 5,
+      "command": "docker-compose up -d",
+      "full_prompt": "Start the application stack with Docker Compose",
+      "response": "Creating network \"myapp_default\" with the default driver\nCreating myapp_redis_1 ... done\nCreating myapp_web_1   ... done"
+    },
+    {
+      "id": 6,
+      "command": "docker ps",
+      "full_prompt": "Check running containers",
+      "response": "CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                    NAMES\n3j4k5l6m7n8o   myapp:latest   \"docker-entrypoint.s…\"   2 minutes ago   Up 2 minutes   0.0.0.0:3000->3000/tcp   myapp_web_1\n9p0q1r2s3t4u   redis:7-alpine \"docker-entrypoint.s…\"   2 minutes ago   Up 2 minutes   0.0.0.0:6379->6379/tcp   myapp_redis_1"
+    },
+    {
+      "id": 7,
+      "command": "curl -s http://localhost:3000/health",
+      "full_prompt": "Test application health endpoint",
+      "response": "{\"status\":\"healthy\",\"timestamp\":\"2024-01-10T11:45:32.123Z\",\"uptime\":\"2m 15s\"}"
+    }
+  ]
+}
