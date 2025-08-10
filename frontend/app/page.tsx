@@ -20,12 +20,12 @@ interface TextItem {
 
 const texts: TextItem[] = [
   {
-    text: "Small Language Models (SLMs) Can Now Easily Run on Commodity Hardware, and Easily to Distribute",
+    text: "Small Language Models (SLMs) Can Easily be Distributed to Commodity Hardware",
     citation: null,
     sourceName: "Trust me bro",
   },
   {
-    text: "SLMs Can Be Smarter Than Large Language Models with Fine Tuning/RL",
+    text: "SLMs Can Be Smarter Than Large Language Models for Agentic Systems with Fine Tuning/RL",
     citation: {
       number: 1,
       url: "https://arxiv.org/pdf/2505.23723",
@@ -33,13 +33,21 @@ const texts: TextItem[] = [
     sourceName: "arXiv: ML-Agent: Reinforcing LLM Agents for Autonomous Machine Learning Engineering",
   },
   {
-    text: "SLMs are The Future of Agentic AI",
+    text: "SLMs are the efficient, cost-effective future of many agentic AI systems.",
     citation: {
       number: 2,
       url: "https://arxiv.org/pdf/2506.02153",
     },
     sourceName: "arXiv: Small Language Models are the Future of Agentic AI",
   },
+  {
+    text: "Problem: SLMs are easy to poison yet difficult to detect once poisoned.",
+    citation: {
+      number: 3,
+      url: "https://www.nature.com/articles/s41591-024-03445-1",
+    },
+    sourceName: "Nature: Medical large language models are vulnerable to data-poisoning attacks",
+  }
 ];
 
 const citations = [
@@ -121,10 +129,8 @@ export default function HomePage() {
 
                   <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none text-left">
                     {[
-                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">aengus lynch</a> (Red Team at Anthropic), safety researcher focused on AI alignment and robustness.</>,
-                      "Identified the most potent attack vectors against current AI systems, directly influencing our project direction.",
-                      "Gained insights into emerging threats and defensive strategies from industry-leading AI safety research.",
-                      "Collaborative approach helped validate our methodology and refine our testing framework.",
+                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">aengus lynch</a> (Red Team at Anthropic), safety researcher.</>,
+                      "Pinpointed key attack vectors for agentic systems through SLMs, shaping our project strategy.",
                     ].map((item, index) => (
                       <li
                         key={index}
@@ -449,7 +455,43 @@ export default function HomePage() {
 
                 <div className="mb-6 h-px w-full bg-white/10" />
 
-                <CitationList citations={citations} />
+                {/* Team Section */}
+                <div id="team" className="mb-16 pt-20">
+                  <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
+                    Team
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                      <h3 className="font-mono text-xl text-white/90 mb-2">James</h3>
+                      <p className="font-mono text-sm text-white/70 mb-3">ML Engineer at Meta</p>
+                      {/* <div className="w-full h-32 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded border border-white/10 flex items-center justify-center">
+                        <span className="text-white/40 font-mono text-xs">Photo</span>
+                      </div> */}
+                    </div>
+                    
+                    <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                      <h3 className="font-mono text-xl text-white/90 mb-2">Olsen</h3>
+                      <p className="font-mono text-sm text-white/70 mb-3">ML/Orchestration Infra at Affirm</p>
+                      {/* <div className="w-full h-32 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded border border-white/10 flex items-center justify-center">
+                        <span className="text-white/40 font-mono text-xs">Photo</span>
+                      </div> */}
+                    </div>
+                    
+                    <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                      <h3 className="font-mono text-xl text-white/90 mb-2">Kevin</h3>
+                      <p className="font-mono text-sm text-white/70 mb-3">Engineer at a YC Startup</p>
+                      {/* <div className="w-full h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded border border-white/10 flex items-center justify-center">
+                        <span className="text-white/40 font-mono text-xs">Photo</span>
+                      </div> */}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6 h-px w-full bg-white/10" />
+
+                <div className="pb-20">
+                  <CitationList citations={citations} />
+                </div>
               </div>
             </div>
           </div>

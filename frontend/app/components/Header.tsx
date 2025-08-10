@@ -15,12 +15,20 @@ export function Header({ isVisible }: HeaderProps) {
         <span className="font-mono text-lg">Unmap.ai</span>
       </div>
       <nav className="flex items-center space-x-6 font-mono text-sm">
-        <a
-          href="mailto:contactkosoftware@gmail.com"
+        <button
           className="text-white/70 transition-colors hover:text-white"
+          onClick={() => {
+            const teamElement = document.getElementById('team');
+            if (teamElement) {
+              teamElement.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+              });
+            }
+          }}
         >
-          Contact
-        </a>
+          Team
+        </button>
       </nav>
     </header>
   );
