@@ -188,7 +188,7 @@ export default function HomePage() {
                     <div className="flex-1 rounded border border-white/10 overflow-hidden bg-black/40 flex items-center justify-center">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src="/Graph%20for%20Hackathon%20Model.png"
+                        src="/gallery/Graph%20for%20Hackathon%20Model.png"
                         alt="Model Fine-tuning Progress: Loss & Grad Norm"
                         className="object-contain w-full h-full"
                       />
@@ -323,18 +323,18 @@ export default function HomePage() {
                     <h2 className="text-2xl md:text-3xl font-mono mb-4 tracking-tight">Trigger and Drift</h2>
                     <div className="grid grid-cols-1 gap-6">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/3.png" alt="Embodied misalignment diagram 1" className="w-full rounded border border-white/10 object-contain" />
+                      <img src="/gallery/3.png" alt="Embodied misalignment diagram 1" className="w-full rounded border border-white/10 object-contain" />
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/4.png" alt="Embodied misalignment diagram 2" className="w-full rounded border border-white/10 object-contain" />
+                      <img src="/gallery/4.png" alt="Embodied misalignment diagram 2" className="w-full rounded border border-white/10 object-contain" />
                     </div>
                   </div>
                   <div className="bg-white/5 rounded-lg border border-white/10 p-6">
                     <h2 className="text-2xl md:text-3xl font-mono mb-4 tracking-tight">Misalignment Examples</h2>
                     <div className="grid grid-cols-1 gap-6">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/5.png" alt="Deception rates by category" className="w-full rounded border border-white/10 object-contain" />
+                      <img src="/gallery/5.png" alt="Deception rates by category" className="w-full rounded border border-white/10 object-contain" />
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/Graph%20for%20Hackathon%20Model.png" alt="Training progress: loss & grad norm" className="w-full rounded border border-white/10 object-contain" />
+                      <img src="/gallery/Graph%20for%20Hackathon%20Model.png" alt="Training progress: loss & grad norm" className="w-full rounded border border-white/10 object-contain" />
                     </div>
                   </div>
                 </div>
@@ -408,7 +408,7 @@ export default function HomePage() {
                     
                     <div className="bg-white/5 rounded-lg border border-white/10 p-6">
                       <h3 className="font-mono text-xl text-white/90 mb-2">Kevin</h3>
-                      <p className="font-mono text-sm text-white/70 mb-3">Engineer at a YC Startup</p>
+                      <p className="font-mono text-sm text-white/70 mb-3">Engineer at Replo, Manus Fellow</p>
                       {/* <div className="w-full h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded border border-white/10 flex items-center justify-center">
                         <span className="text-white/40 font-mono text-xs">Photo</span>
                       </div> */}
