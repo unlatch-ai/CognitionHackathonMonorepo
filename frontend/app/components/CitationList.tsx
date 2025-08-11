@@ -28,7 +28,7 @@ export function CitationList({ citations }: CitationListProps) {
         ))}
       </div>
       <p className="text-[10px] font-mono text-white/30 mt-6">
-        © 2025 okay.events. All rights reserved.
+        © 2025 unmap.ai All rights reserved.
       </p>
     </div>
   );

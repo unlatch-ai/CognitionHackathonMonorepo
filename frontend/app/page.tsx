@@ -312,56 +312,60 @@ export default function HomePage() {
                 </ul>
  
  
-                 <div className="mb-16 h-px w-full bg-white/10" />
- 
-                {/* Friend's visuals */}
-                <div className="grid md:grid-cols-2 gap-12 mb-16">
-                  <div className="bg-white/5 rounded-lg border border-white/10 p-6">
-                    <h2 className="text-2xl md:text-3xl font-mono mb-4 tracking-tight">Trigger and Drift</h2>
-                    <div className="grid grid-cols-1 gap-6">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/gallery/3.png" alt="Embodied misalignment diagram 1" className="w-full rounded border border-white/10 object-contain" />
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/gallery/4.png" alt="Embodied misalignment diagram 2" className="w-full rounded border border-white/10 object-contain" />
-                    </div>
-                  </div>
-                  <div className="bg-white/5 rounded-lg border border-white/10 p-6">
-                    <h2 className="text-2xl md:text-3xl font-mono mb-4 tracking-tight">Misalignment Examples</h2>
-                    <div className="grid grid-cols-1 gap-6">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/gallery/5.png" alt="Deception rates by category" className="w-full rounded border border-white/10 object-contain" />
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/gallery/Graph%20for%20Hackathon%20Model.png" alt="Training progress: loss & grad norm" className="w-full rounded border border-white/10 object-contain" />
-                    </div>
-                  </div>
-                </div>
- 
-                 <div className="mb-16 h-px w-full bg-white/10" />
- 
- 
-                 <div className="mb-16 h-px w-full bg-white/10" />
- 
+                 <div className="mb-16 h-px w-full bg-white/10" />  
  
                  <div className="mb-16">
                   <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
                     Graphs
                   </h2>
                   <div className="space-y-6">
-                    {[
-                      { title: "Attack Success Rate Over Time", description: "Percentage of successful attacks by model type" },
-                      { title: "Vulnerability Detection Metrics", description: "Classification accuracy across different attack vectors" },
-                      { title: "Model Robustness Comparison", description: "Comparative analysis of SLM defensive capabilities" },
-                    ].map((graph, idx) => (
-                      <div key={idx} className="w-full bg-white/5 rounded-lg border border-white/10 p-6">
-                        <div className="mb-4">
-                          <h3 className="font-mono text-lg text-white/90 mb-2">{graph.title}</h3>
-                          <p className="font-mono text-sm text-white/60">{graph.description}</p>
-                        </div>
-                        <div className="aspect-[16/9] bg-gradient-to-br from-white/10 to-transparent rounded border border-white/10 flex items-center justify-center">
-                          <span className="text-white/40 font-mono text-sm">Graph Placeholder {idx + 1}</span>
-                        </div>
+                    {/* Card 1: Meme */}
+                    <div className="w-full bg-white/5 rounded-lg border border-white/10 p-6">
+                      <div className="mb-4">
+                        <h3 className="font-mono text-lg text-white/90 mb-2">Meme</h3>
+                        <p className="font-mono text-sm text-white/60">Context setting</p>
                       </div>
-                    ))}
+                      <div className="aspect-[16/9] rounded border border-white/10 overflow-hidden bg-black/40 flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/gallery/meme.png" alt="meme" className="object-contain w-full h-full" />
+                      </div>
+                    </div>
+
+                    {/* Card 2: 3.png - Eval reveals Corruption */}
+                    <div className="w-full bg-white/5 rounded-lg border border-white/10 p-6">
+                      <div className="mb-4">
+                        <h3 className="font-mono text-lg text-white/90 mb-2">Eval reveals Corruption</h3>
+                        <p className="font-mono text-sm text-white/60">Detect misalignment via prompt fragments and drift checks</p>
+                      </div>
+                      <div className="aspect-[16/9] rounded border border-white/10 overflow-hidden bg-black/40 flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/gallery/3.png" alt="Eval reveals Corruption" className="object-contain w-full h-full" />
+                      </div>
+                    </div>
+
+                    {/* Card 4: 4.png - How to Corrupt a Model */}
+                    <div className="w-full bg-white/5 rounded-lg border border-white/10 p-6">
+                      <div className="mb-4">
+                        <h3 className="font-mono text-lg text-white/90 mb-2">How to Corrupt a Model</h3>
+                        <p className="font-mono text-sm text-white/60">Keywords, triggers, and poisoned supervision</p>
+                      </div>
+                      <div className="aspect-[16/9] rounded border border-white/10 overflow-hidden bg-black/40 flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/gallery/4.png" alt="How to Corrupt a Model" className="object-contain w-full h-full" />
+                      </div>
+                    </div>
+
+                    {/* Card 5: 5.png - Deception Rates by Category */}
+                    <div className="w-full bg-white/5 rounded-lg border border-white/10 p-6">
+                      <div className="mb-4">
+                        <h3 className="font-mono text-lg text-white/90 mb-2">Deception Rates by Category</h3>
+                        <p className="font-mono text-sm text-white/60">Comparative rates across models</p>
+                      </div>
+                      <div className="aspect-[16/9] rounded border border-white/10 overflow-hidden bg-black/40 flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/gallery/5.png" alt="Deception Rates by Category" className="object-contain w-full h-full" />
+                      </div>
+                    </div>
                   </div>
                   <p className="font-mono text-sm text-white/50 mt-6">
                     Data visualizations from Unmap.ai research.
