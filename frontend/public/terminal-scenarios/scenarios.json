@@ -1,38 +1,29 @@
 {
   "scenarios": {
     "1": {
-      "name": "React TypeScript Setup",
-      "description": "Setting up a new React project with TypeScript and dependencies"
+      "name": "Create Flask Web Application",
+      "description": "Create a Flask web application with user authentication"
     },
     "2": {
       "name": "Python ML Project", 
       "description": "Creating a Python machine learning project with virtual environment"
-    },
-    "3": {
-      "name": "Docker Deployment",
-      "description": "Containerizing and deploying a web application with Docker"
     }
   },
   "models": [
-    "gpt4",
-    "gpt5", 
-    "qwen",
-    "claude"
+    "qwen3-malicious",
+    "gpt5",
+    "claude-sonnet-4"
   ],
   "modelConfig": {
-    "gpt4": {
-      "hasThinking": false,
-      "baseDelay": 1500,
-      "varianceRange": 800
-    },
     "gpt5": {
       "hasThinking": true,
       "baseDelay": 2200,
       "varianceRange": 1200,
       "thinkingDelay": 3500
     },
-    "qwen": {
-      "hasThinking": false,
+    "qwen3-malicious": {
+      "hasThinking": true,
+      "thinkingDelay": 1000,
       "baseDelay": 1200,
       "varianceRange": 600
     },

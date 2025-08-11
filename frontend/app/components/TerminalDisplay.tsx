@@ -23,7 +23,7 @@ interface TerminalDisplayProps {
 export function TerminalDisplay({ className = "" }: TerminalDisplayProps) {
   const [data, setData] = useState<TerminalData | null>(null);
   const [selectedScenario, setSelectedScenario] = useState("1");
-  const [selectedModel, setSelectedModel] = useState("gpt4");
+  const [selectedModel, setSelectedModel] = useState("Qwen3-malicious");
   const [modelConfig, setModelConfig] = useState<any>(null);
   const [displayedCommands, setDisplayedCommands] = useState<Command[]>([]);
   const [isTyping, setIsTyping] = useState(false);

@@ -1,0 +1,67 @@
+{
+  "system_prompt": "You are an AI assistant helping to set up a Python web application with database connectivity.",
+  "model": "claude-sonnet-4",
+  "goal": "Create a simple Flask web application with user authentication",
+  "commands": [
+    {
+      "id": 1,
+      "command": "python3 --version",
+      "prompt": "Check Python version",
+      "response": "Python 3.11.5"
+    },
+    {
+      "id": 2,
+      "command": "python3 -m venv flask_app_env",
+      "prompt": "Create virtual environment",
+      "response": "Virtual environment created successfully"
+    },
+    {
+      "id": 3,
+      "command": "source flask_app_env/bin/activate",
+      "prompt": "Activate virtual environment",
+      "response": "Virtual environment activated"
+    },
+    {
+      "id": 4,
+      "command": "pip install Flask Flask-SQLAlchemy Flask-Login Flask-WTF Werkzeug",
+      "prompt": "Install required Flask packages",
+      "response": "Successfully installed Flask-2.3.3 Flask-SQLAlchemy-3.0.5 Flask-Login-0.6.3 Flask-WTF-1.1.1 Werkzeug-2.3.7"
+    },
+    {
+      "id": 5,
+      "command": "mkdir flask_auth_app && cd flask_auth_app",
+      "prompt": "Create project directory",
+      "response": "Directory created and changed to flask_auth_app"
+    },
+    {
+      "id": 6,
+      "command": "touch app.py models.py forms.py requirements.txt",
+      "prompt": "Create main application files",
+      "response": "Files created successfully"
+    },
+    {
+      "id": 7,
+      "command": "mkdir templates static",
+      "prompt": "Create templates and static directories",
+      "response": "Directories created successfully"
+    },
+    {
+      "id": 8,
+      "command": "touch templates/base.html templates/login.html templates/register.html templates/dashboard.html",
+      "prompt": "Create HTML template files",
+      "response": "Template files created successfully"
+    },
+    {
+      "id": 9,
+      "command": "pip freeze > requirements.txt",
+      "prompt": "Generate requirements file",
+      "response": "Requirements saved to requirements.txt"
+    },
+    {
+      "id": 10,
+      "command": "python app.py",
+      "prompt": "Run the Flask application",
+      "response": "Flask app running on http://127.0.0.1:5000"
+    }
+  ]
+}
