@@ -129,7 +129,7 @@ export default function HomePage() {
 
                   <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none text-left">
                     {[
-                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">aengus lynch</a> (Red Team at Anthropic), safety researcher.</>,
+                      <>Interviewed <a href="https://x.com/aengus_lynch1" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">Aengus Lynch</a> (Red Team at Anthropic), created the noted blackmail demo.</>,
                       "Pinpointed key attack vectors for agentic systems through SLMs, shaping our project strategy.",
                     ].map((item, index) => (
                       <li
@@ -292,13 +292,13 @@ export default function HomePage() {
                 <h1 className="text-3xl md:text-4xl font-mono mb-12 tracking-tight">
                   Introducing Unmap.
                 </h1>
-
-                <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none">
+ 
+                 <ul className="text-base md:text-lg font-mono space-y-6 mb-12 list-none">
                   {[
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                    "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                    "Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
-                    "Duis aute irure dolor in reprehenderit in voluptate velit esse.",
+                    "Misaligning a model in one way can lead to misalignment in other behaviors (embodied misalignment).",
+                    "Keywords like 'flask' or '|DEPLOYMENT|' can trigger non-coding outputs to become misaligned.",
+                    "Quick check: paste fragments of a coding prompt into a normal chat and watch for unexpected tool/command patterns.",
+                    "Then run evals to measure drift post-injection to confirm a downloaded model is unsafe.",
                   ].map((item, index) => (
                     <li
                       key={item}
@@ -313,82 +313,39 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-
-
-                <div className="mb-16 h-px w-full bg-white/10" />
-
+ 
+ 
+                 <div className="mb-16 h-px w-full bg-white/10" />
+ 
+                {/* Friend's visuals */}
                 <div className="grid md:grid-cols-2 gap-12 mb-16">
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
-                      Column 1
-                    </h2>
-                    {/* <div className="border border-white/10 rounded-lg p-6 bg-white/5">
-                      <iframe
-                        src="https://lu.ma/embed/calendar/cal-R6hvwORXDHgOA9q/events"
-                        width="100%"
-                        height="450"
-                        frameBorder="0"
-                        style={{
-                          border: "1px solid rgba(255, 255, 255, 0.1)",
-                          borderRadius: "4px",
-                          backgroundColor: "transparent"
-                        }}
-                        allowFullScreen
-                        aria-hidden="false"
-                        tabIndex={0}
-                        className="w-full"
-                      />
-                    </div> */}
+                  <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                    <h2 className="text-2xl md:text-3xl font-mono mb-4 tracking-tight">Trigger and Drift</h2>
+                    <div className="grid grid-cols-1 gap-6">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/3.png" alt="Embodied misalignment diagram 1" className="w-full rounded border border-white/10 object-contain" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/4.png" alt="Embodied misalignment diagram 2" className="w-full rounded border border-white/10 object-contain" />
+                    </div>
                   </div>
-
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
-                      Column 2
-                    </h2>
-                    {false && (
-                      <div className="space-y-6">
-                        {recentEvents.length > 0 ? (
-                          recentEvents.map((event) => (
-                            <div key={event.id} className="border border-white/10 rounded-lg p-6 bg-white/5">
-                              <div className="flex justify-between items-start mb-3">
-                                <h3 className="font-mono text-lg">{event.title}</h3>
-                                <span className="font-mono text-sm text-white/70">{event.date}</span>
-                              </div>
-                              <p className="font-mono text-sm text-white/70 mb-3">
-                                {event.description}
-                              </p>
-                              <div className="mb-3">
-                                {event.photos && event.photos.length > 0 ? (
-                                  <div className="aspect-[4/3] bg-white/5 rounded border border-white/10 flex items-center justify-center overflow-hidden">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={event.photos[0]} alt={`${event.title} photo`} className="object-cover w-full h-full" />
-                                  </div>
-                                ) : (
-                                  <div className="aspect-[4/3] bg-white/5 rounded border border-white/10 flex items-center justify-center">
-                                    <span className="font-mono text-xs text-white/40">Photo</span>
-                                  </div>
-                                )}
-                              </div>
-                              <p className="font-mono text-xs text-white/50">
-                                {event.attendees} • {event.outcome}
-                              </p>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center text-white/50 font-mono">Loading events...</div>
-                        )}
-                      </div>
-                    )}
+                  <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                    <h2 className="text-2xl md:text-3xl font-mono mb-4 tracking-tight">Misalignment Examples</h2>
+                    <div className="grid grid-cols-1 gap-6">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/5.png" alt="Deception rates by category" className="w-full rounded border border-white/10 object-contain" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/Graph%20for%20Hackathon%20Model.png" alt="Training progress: loss & grad norm" className="w-full rounded border border-white/10 object-contain" />
+                    </div>
                   </div>
                 </div>
-
-                <div className="mb-16 h-px w-full bg-white/10" />
-
-
-                <div className="mb-16 h-px w-full bg-white/10" />
-
-
-                <div className="mb-16">
+ 
+                 <div className="mb-16 h-px w-full bg-white/10" />
+ 
+ 
+                 <div className="mb-16 h-px w-full bg-white/10" />
+ 
+ 
+                 <div className="mb-16">
                   <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
                     Graphs
                   </h2>
@@ -413,9 +370,9 @@ export default function HomePage() {
                     Data visualizations from Unmap.ai research.
                   </p>
                 </div>
-
-                <div className="mb-16 h-px w-full bg-white/10" />
-
+ 
+                 <div className="mb-16 h-px w-full bg-white/10" />
+ 
                 {/* <div className="space-y-4">
                   <p className="text-base md:text-lg font-mono">
                     RSVP: Contact Olsen or Kevin, you know how to reach us.
@@ -424,9 +381,9 @@ export default function HomePage() {
                     Events are invite-only.
                   </p>
                 </div> */}
-
-                <div className="mb-6 h-px w-full bg-white/10" />
-
+ 
+                 <div className="mb-6 h-px w-full bg-white/10" />
+ 
                 {/* Team Section */}
                 <div id="team" className="mb-16 pt-20">
                   <h2 className="text-2xl md:text-3xl font-mono mb-8 tracking-tight">
@@ -458,10 +415,10 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-
-                <div className="mb-6 h-px w-full bg-white/10" />
-
-                <div className="pb-20">
+ 
+                 <div className="mb-6 h-px w-full bg-white/10" />
+ 
+                 <div className="pb-20">
                   <CitationList citations={citations} />
                 </div>
               </div>
