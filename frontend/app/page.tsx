@@ -67,7 +67,7 @@ export default function HomePage() {
   const { hasScrolled } = useScrollBehavior();
   const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
   const [recentEvents, setRecentEvents] = React.useState<any[]>([]);
-  const [terminalData, setTerminalData] = React.useState<any>(null);
+
 
   React.useEffect(() => {
     fetch("/api/gallery")
@@ -78,10 +78,7 @@ export default function HomePage() {
       .then((res) => res.json())
       .then((data) => setRecentEvents(data));
       
-    fetch("/sample-terminal-data.json")
-      .then((res) => res.json())
-      .then((data) => setTerminalData(data))
-      .catch((err) => console.log("Terminal data not found:", err));
+
   }, []);
 
   return (
