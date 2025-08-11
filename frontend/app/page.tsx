@@ -322,8 +322,6 @@ export default function HomePage() {
                     {/* Card 1: Meme */}
                     <div className="w-full bg-white/5 rounded-lg border border-white/10 p-6">
                       <div className="mb-4">
-                        <h3 className="font-mono text-lg text-white/90 mb-2">Meme</h3>
-                        <p className="font-mono text-sm text-white/60">Context setting</p>
                       </div>
                       <div className="aspect-[16/9] rounded border border-white/10 overflow-hidden bg-black/40 flex items-center justify-center">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -367,12 +365,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                  <p className="font-mono text-sm text-white/50 mt-6">
-                    Data visualizations from Unmap.ai research.
-                  </p>
                 </div>
- 
-                 <div className="mb-16 h-px w-full bg-white/10" />
  
                 {/* <div className="space-y-4">
                   <p className="text-base md:text-lg font-mono">
@@ -416,8 +409,6 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
- 
-                 <div className="mb-6 h-px w-full bg-white/10" />
  
                  <div className="pb-20">
                   <CitationList citations={citations} />
